@@ -3,7 +3,9 @@ import { useTableState }    from "./hooks/useTableState";
 import { useFetchRecords }  from "./hooks/useFetchRecords";
 import { useColumnPrefs }   from "./hooks/useColumnPrefs";
 import { DataTable, DEFAULT_COLUMNS } from "./components/table/DataTable";
+import { TableToolbar }     from "./components/table/TableToolbar";
 import { usePagination, PAGE_SIZE_OPTIONS } from "./hooks/usePagination";
+import { countActiveFilters } from "./utils/filterUtils";
 import styles from "./App.module.css";
 
 const DEFAULT_COLUMN_IDS = DEFAULT_COLUMNS.map((c) => c.id);
@@ -25,11 +27,17 @@ export default function App() {
     [visibleColumnIds]
   );
 
-  const { totalPages, startRow, endRow, hasPrev, hasNext } = usePagination({
-    totalCount,
-    page:  state.pagination.page,
-    limit: state.pagination.limit,
-  });
+  const { totalPages, startRow, endRow, hasPrev, hasNext, pageNumbers } =
+    usePagination({
+      totalCount,
+      page:  state.pagination.page,
+      limit: state.pagination.limit,
+    });
+
+  const activeFilterCount = useMemo(
+    () => countActiveFilters(state.filters),
+    [state.filters]
+  );
 
   return (
     <div className={styles.app}>
@@ -46,8 +54,16 @@ export default function App() {
         </div>
       </header>
 
-      {/* ── Table ───────────────────────────────────────────────────────── */}
+      {/* ── Main content ─────────────────────────────────────────────────── */}
       <main className={styles.main}>
+        {/* Search + filters toolbar */}
+        <TableToolbar
+          filters={state.filters}
+          actions={actions}
+          activeCount={activeFilterCount}
+        />
+
+        {/* Virtualized data table */}
         <DataTable
           records={records}
           totalCount={totalCount}
@@ -69,7 +85,7 @@ export default function App() {
             : `Showing ${startRow.toLocaleString()}–${endRow.toLocaleString()} of ${totalCount.toLocaleString()}`}
         </span>
 
-        <div className={styles.pageControls}>
+        <nav className={styles.pageControls} aria-label="Pagination">
           <button
             className={styles.pageBtn}
             disabled={!hasPrev}
@@ -78,9 +94,23 @@ export default function App() {
           >
             ‹
           </button>
-          <span className={styles.pageIndicator}>
-            {state.pagination.page} / {totalPages}
-          </span>
+
+          {pageNumbers.map((p, i) =>
+            p === "…" ? (
+              <span key={`ellipsis-${i}`} className={styles.ellipsis}>…</span>
+            ) : (
+              <button
+                key={p}
+                className={`${styles.pageBtn} ${p === state.pagination.page ? styles.pageBtnActive : ""}`}
+                onClick={() => actions.setPage(p)}
+                aria-label={`Page ${p}`}
+                aria-current={p === state.pagination.page ? "page" : undefined}
+              >
+                {p}
+              </button>
+            )
+          )}
+
           <button
             className={styles.pageBtn}
             disabled={!hasNext}
@@ -89,7 +119,7 @@ export default function App() {
           >
             ›
           </button>
-        </div>
+        </nav>
 
         <select
           className={styles.limitSelect}

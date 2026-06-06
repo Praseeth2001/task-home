@@ -130,3 +130,20 @@
   transition: border-color 0.15s;
 }
 .limitSelect:hover { border-color: var(--color-accent); }
+
+.pageBtnActive {
+  background: var(--color-accent-subtle);
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+  font-weight: 600;
+}
+
+.ellipsis {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}

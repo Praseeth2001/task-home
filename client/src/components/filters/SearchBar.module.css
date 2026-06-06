@@ -1,0 +1,77 @@
+.root {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 34px;
+  padding: 0 10px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-raised);
+  transition: border-color 0.15s, box-shadow 0.15s;
+  min-width: 260px;
+}
+
+.root:focus-within {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px var(--color-accent-subtle);
+}
+
+.active {
+  border-color: color-mix(in srgb, var(--color-accent) 50%, var(--color-border));
+}
+
+.icon {
+  color: var(--color-text-muted);
+  font-size: 1.1rem;
+  line-height: 1;
+  flex-shrink: 0;
+  transform: scaleX(-1); /* mirror the magnifier to face right */
+}
+
+.input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  outline: none;
+  color: var(--color-text);
+  font-size: 0.84rem;
+  min-width: 0;
+}
+.input::placeholder { color: var(--color-text-muted); }
+/* hide browser's native clear button — we render our own */
+.input::-webkit-search-cancel-button { display: none; }
+
+/* small green dot indicating an active search */
+.activeIndicator {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  flex-shrink: 0;
+  animation: pulse 2s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+}
+
+.clearBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border: none;
+  border-radius: 50%;
+  background: var(--color-border);
+  color: var(--color-text-muted);
+  font-size: 0.6rem;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.15s, color 0.15s;
+  line-height: 1;
+}
+.clearBtn:hover {
+  background: var(--color-error);
+  color: #fff;
+}
