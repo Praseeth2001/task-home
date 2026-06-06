@@ -1,0 +1,14 @@
+{
+  "name": "spotify-table-root",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "client": "cd client && npm run dev",
+    "server": "cd server && npx json-server@0.17 db.json --port 3001 --watch",
+    "setup": "node scripts/csvToJson.js",
+    "install:all": "npm install && cd client && npm install"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

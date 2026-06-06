@@ -1,0 +1,22 @@
+# Dependencies
+node_modules/
+client/node_modules/
+
+# Build output
+client/dist/
+
+# Env (keep .env.example, ignore actual .env)
+client/.env
+!client/.env.example
+
+# Data (large files — add db.json if under 100MB, else gitignore)
+data/*.csv
+# server/db.json   ← uncomment if db.json exceeds GitHub's 100 MB limit
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
