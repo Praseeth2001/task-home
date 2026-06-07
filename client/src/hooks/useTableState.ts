@@ -62,7 +62,7 @@ export const INITIAL_TABLE_STATE: TableState = {
   },
   pagination: {
     page: 1,
-    limit: 50,
+    limit: 25,
   },
   filters: INITIAL_FILTERS,
   editing: null,

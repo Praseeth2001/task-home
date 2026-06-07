@@ -1,0 +1,322 @@
+/* ── Page shell ──────────────────────────────────────────────────────────── */
+.page {
+  flex: 1;
+  min-height: 0;
+  height: 100%;
+  overflow: auto;
+  background: var(--color-bg);
+  color: var(--color-text);
+  padding-bottom: 4rem;
+}
+
+.centered {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+/* ── Top bar ─────────────────────────────────────────────────────────────── */
+.topBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2rem;
+  height: 52px;
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-surface);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.backBtn {
+  font-size: 0.84rem;
+  color: var(--color-text-muted);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: color 0.15s;
+}
+.backBtn:hover { color: var(--color-accent); }
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.saveMsg {
+  font-size: 0.8rem;
+  color: var(--color-accent);
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  background: var(--color-accent-subtle);
+}
+.saveMsgError {
+  color: var(--color-error);
+  background: rgba(248,113,113,0.1);
+}
+
+/* ── Buttons ─────────────────────────────────────────────────────────────── */
+.btnPrimary {
+  height: 32px;
+  padding: 0 14px;
+  background: var(--color-accent);
+  color: var(--color-bg);
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 0.84rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+.btnPrimary:hover:not(:disabled) { opacity: 0.85; }
+.btnPrimary:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.btnSecondary {
+  height: 32px;
+  padding: 0 14px;
+  background: transparent;
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: 0.84rem;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+.btnSecondary:hover:not(:disabled) { border-color: var(--color-accent); color: var(--color-accent); }
+.btnSecondary:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.btnGhost {
+  height: 32px;
+  padding: 0 12px;
+  background: transparent;
+  color: var(--color-text-muted);
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 0.84rem;
+  cursor: pointer;
+  transition: color 0.15s;
+}
+.btnGhost:hover:not(:disabled) { color: var(--color-error); }
+
+/* ── Hero section ────────────────────────────────────────────────────────── */
+.hero {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 2rem;
+  padding: 2.5rem 2rem 2rem;
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-surface);
+}
+
+.heroInner { flex: 1; min-width: 0; }
+
+.heroMeta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 0.75rem;
+}
+
+.heroGenre {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+  background: var(--color-accent-subtle);
+  padding: 3px 8px;
+  border-radius: 999px;
+}
+
+.explicitBadge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  background: var(--color-text-muted);
+  color: var(--color-bg);
+  padding: 2px 5px;
+  border-radius: 3px;
+}
+
+.editingBadge {
+  font-size: 0.7rem;
+  color: var(--color-warning);
+  background: rgba(251,191,36,0.1);
+  border: 1px solid rgba(251,191,36,0.3);
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+
+.heroTitle {
+  font-size: 2rem;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--color-text);
+  margin-bottom: 0.5rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.heroInput {
+  width: 100%;
+  font-size: 2rem;
+  font-weight: 600;
+  font-family: inherit;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid var(--color-accent);
+  outline: none;
+  color: var(--color-text);
+  padding: 0 0 4px;
+  line-height: 1.2;
+  margin-bottom: 0.5rem;
+}
+
+.heroInputSm {
+  font-size: 1rem;
+  font-family: inherit;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--color-border);
+  outline: none;
+  color: var(--color-text-muted);
+  padding: 0 0 2px;
+  width: 280px;
+}
+.heroInputSm:focus { border-bottom-color: var(--color-accent); }
+
+.heroArtist {
+  font-size: 1rem;
+  color: var(--color-text-muted);
+  margin-bottom: 0.25rem;
+}
+
+.heroAlbum {
+  font-size: 0.84rem;
+  color: var(--color-text-subtle);
+}
+
+/* ── Popularity meter (vertical bar) ─────────────────────────────────────── */
+.popularityMeter {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.popularityNum {
+  font-size: 1.5rem;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  color: var(--color-accent);
+  line-height: 1;
+}
+
+.popularityLabel {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-text-muted);
+}
+
+.popularityTrack {
+  width: 8px;
+  height: 80px;
+  background: var(--color-border);
+  border-radius: 4px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.popularityFill {
+  background: var(--color-accent);
+  border-radius: 4px;
+  transition: height 0.4s ease;
+}
+
+/* ── Field groups ────────────────────────────────────────────────────────── */
+.groups {
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  max-width: 900px;
+}
+
+.group {}
+
+.groupHeading {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--color-border-faint);
+}
+
+.fieldGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1rem 2rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.fieldEditing { /* no extra style needed — input handles it */ }
+
+.fieldLabel {
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.fieldValue {
+  font-size: 0.9rem;
+  color: var(--color-text);
+  font-family: var(--font-mono);
+}
+
+.fieldInputWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.fieldInput {
+  height: 32px;
+  padding: 0 8px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-raised);
+  color: var(--color-text);
+  font-size: 0.88rem;
+  font-family: var(--font-mono);
+  outline: none;
+  transition: border-color 0.15s;
+  -moz-appearance: textfield;
+}
+.fieldInput::-webkit-inner-spin-button { -webkit-appearance: none; }
+.fieldInput:focus { border-color: var(--color-accent); }
+
+.inputError { border-color: var(--color-error) !important; }
+
+.fieldError {
+  font-size: 0.7rem;
+  color: var(--color-error);
+}

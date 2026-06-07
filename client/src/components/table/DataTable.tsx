@@ -146,6 +146,25 @@ function formatDuration(ms: number): string {
   return `${mins}:${secs.toString().padStart(2, "0")}`;
 }
 
+// ─── Cell ─────────────────────────────────────────────────────────────────────
+
+interface CellProps {
+  width: number;
+  children: React.ReactNode;
+  className?: string;
+}
+
+function Cell({ width, children, className }: CellProps) {
+  return (
+    <div
+      className={`${styles.cell} ${className ?? ""}`}
+      style={{ width, minWidth: width, maxWidth: width }}
+    >
+      {children}
+    </div>
+  );
+}
+
 // ─── Header row ───────────────────────────────────────────────────────────────
 
 interface HeaderRowProps {
@@ -248,6 +267,7 @@ interface DataRowProps {
     value: string | number,
   ) => Promise<void>;
   onCancelEdit: () => void;
+  onRowClick: (id: string) => void;
   top: number; // virtualizer offset
 }
 
@@ -261,13 +281,19 @@ const DataRow = memo(function DataRow({
   onSave,
   onCancelEdit,
   top,
+  onRowClick,
 }: DataRowProps) {
   return (
     <div
       className={`${styles.dataRow} ${isSelected ? styles.rowSelected : ""}`}
-      style={{ transform: `translateY(${top}px)` }}
+      style={{ transform: `translateY(${top}px)`, cursor: "pointer" }}
       role="row"
       aria-selected={isSelected}
+      onClick={(e) => {
+        // Don't navigate if clicking checkbox or editable cell
+        const tag = (e.target as HTMLElement).tagName;
+        if (tag !== "INPUT" && tag !== "BUTTON") onRowClick(row.id);
+      }}
     >
       {/* Checkbox */}
       <div
@@ -342,6 +368,7 @@ interface DataTableProps {
     field: keyof SpotifyRecord,
     value: string | number,
   ) => Promise<void>;
+  onRowClick: (id: string) => void;
 }
 
 export function DataTable({
@@ -355,6 +382,7 @@ export function DataTable({
   errorMessage,
   onRetry,
   onSave,
+  onRowClick,
 }: DataTableProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -404,7 +432,6 @@ export function DataTable({
       <div
         className={styles.headerScroll}
         ref={(el) => {
-          // Sync horizontal scroll between header and body
           const body = scrollRef.current;
           if (!el || !body) return;
           const onBodyScroll = () => {
@@ -425,7 +452,6 @@ export function DataTable({
         </div>
       </div>
 
-      {/* Scrollable body */}
       <div ref={scrollRef} className={styles.bodyScroll}>
         {isLoading && (
           <div className={styles.loadingOverlay}>
@@ -433,7 +459,6 @@ export function DataTable({
           </div>
         )}
 
-        {/* Inner container — sets total scroll width and height */}
         <div
           role="grid"
           aria-rowcount={totalCount}
@@ -458,6 +483,7 @@ export function DataTable({
                 onStartEdit={actions.startEdit}
                 onSave={onSave}
                 onCancelEdit={actions.cancelEdit}
+                onRowClick={onRowClick}
                 top={vItem.start}
               />
             );

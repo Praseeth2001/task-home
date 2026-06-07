@@ -8,3 +8,5 @@ export { useExport } from "./useExport";
 export type { ExportStatus } from "./useExport";
 export { useFetchRecords } from "./useFetchRecords";
 export { useInlineEdit } from "./useInlineEdit";
+export { useTheme } from "./useTheme";
+export type { Theme } from "./useTheme";
