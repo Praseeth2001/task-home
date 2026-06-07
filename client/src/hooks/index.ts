@@ -6,3 +6,5 @@ export type { UsePaginationReturn, PageSize } from "./usePagination";
 export { useColumnPrefs }   from "./useColumnPrefs";
 export { useExport }        from "./useExport";
 export type { ExportStatus } from "./useExport";
+export { useFetchRecords } from "./useFetchRecords";
+export { useInlineEdit } from "./useInlineEdit";

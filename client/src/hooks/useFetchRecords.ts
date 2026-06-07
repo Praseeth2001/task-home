@@ -9,8 +9,9 @@ interface UseFetchRecordsParams {
   filters:    FilterState;
 }
 
-interface UseFetchRecordsReturn {
+export interface UseFetchRecordsReturn {
   records:      SpotifyRecord[];
+  setRecords:   React.Dispatch<React.SetStateAction<SpotifyRecord[]>>;
   totalCount:   number;
   isLoading:    boolean;
   isError:      boolean;
@@ -18,15 +19,6 @@ interface UseFetchRecordsReturn {
   refetch:      () => void;
 }
 
-/**
- * Fetches records from json-server, driven entirely by the table state.
- *
- * Key behaviours:
- * - Debounces the search field (300 ms) — other params fire immediately
- * - Cancels in-flight requests via AbortController when params change
- * - Shows stale rows (isLoading=true) during refetch rather than blanking
- * - Exposes refetch() so error states can offer a "Try again" button
- */
 export function useFetchRecords({
   pagination,
   sort,
@@ -37,24 +29,17 @@ export function useFetchRecords({
   const [isLoading,    setIsLoading]    = useState(true);
   const [isError,      setIsError]      = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const [tick,         setTick]         = useState(0); // bumped by refetch()
+  const [tick,         setTick]         = useState(0);
 
-  const abortRef = useRef<AbortController | null>(null);
-
-  // Only debounce the search string — all other params are already settled
-  // (they change on discrete user actions, not on every keystroke).
+  const abortRef        = useRef<AbortController | null>(null);
   const debouncedSearch = useDebounce(filters.search, 300);
 
-  const effectiveFilters: FilterState = {
-    ...filters,
-    search: debouncedSearch,
-  };
+  const effectiveFilters: FilterState = { ...filters, search: debouncedSearch };
 
   useEffect(() => {
-    // Cancel the previous request before starting a new one
     abortRef.current?.abort();
-    const controller     = new AbortController();
-    abortRef.current     = controller;
+    const controller = new AbortController();
+    abortRef.current = controller;
 
     setIsLoading(true);
     setIsError(false);
@@ -67,7 +52,7 @@ export function useFetchRecords({
         setIsLoading(false);
       })
       .catch((err: Error) => {
-        if (err.name === "AbortError") return; // expected — ignore
+        if (err.name === "AbortError") return;
         setIsError(true);
         setErrorMessage(err.message);
         setIsLoading(false);
@@ -80,8 +65,8 @@ export function useFetchRecords({
     pagination.limit,
     sort.column,
     sort.order,
-    debouncedSearch,              // ← debounced
-    filters.textFilters,          // reference stable — comes from useReducer state
+    debouncedSearch,
+    filters.textFilters,
     filters.multiSelect,
     filters.numericRange,
     tick,
@@ -89,5 +74,5 @@ export function useFetchRecords({
 
   const refetch = useCallback(() => setTick((t) => t + 1), []);
 
-  return { records, totalCount, isLoading, isError, errorMessage, refetch };
+  return { records, setRecords, totalCount, isLoading, isError, errorMessage, refetch };
 }

@@ -1,0 +1,134 @@
+/* ── View mode: plain (not editable) ──────────────────────────────────────── */
+.plain {
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* ── View mode: editable trigger ─────────────────────────────────────────── */
+.trigger {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  width: 100%;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  padding: 2px 4px;
+  text-align: left;
+  cursor: pointer;
+  color: inherit;
+  font-size: inherit;
+  transition: border-color 0.15s, background 0.15s;
+  overflow: hidden;
+}
+.trigger:hover {
+  border-color: var(--color-border);
+  background: var(--color-surface-hover);
+}
+.trigger:hover .pencil { opacity: 1; }
+.trigger:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 1px;
+}
+
+.triggerText {
+  flex: 1;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.pencil {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  opacity: 0;
+  transition: opacity 0.15s;
+  flex-shrink: 0;
+}
+
+/* ── Edit mode ────────────────────────────────────────────────────────────── */
+.editor {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  position: relative;
+  width: 100%;
+}
+
+.input {
+  flex: 1;
+  height: 28px;
+  min-width: 0;
+  padding: 0 6px;
+  border: 1px solid var(--color-accent);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: 0.82rem;
+  outline: none;
+  box-shadow: 0 0 0 3px var(--color-accent-subtle);
+}
+.hasError .input {
+  border-color: var(--color-error);
+  box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.15);
+}
+
+.errorMsg {
+  position: absolute;
+  top: calc(100% + 2px);
+  left: 0;
+  font-size: 0.7rem;
+  color: var(--color-error);
+  white-space: nowrap;
+  background: var(--color-surface-raised);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 2px 6px;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.actions {
+  display: flex;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.saveBtn,
+.cancelBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: var(--radius-sm);
+  font-size: 0.7rem;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: background 0.12s, border-color 0.12s;
+}
+
+.saveBtn {
+  background: var(--color-accent-subtle);
+  color: var(--color-accent);
+  border-color: var(--color-accent-dim);
+}
+.saveBtn:hover:not(:disabled) {
+  background: var(--color-accent);
+  color: var(--color-bg);
+}
+.saveBtn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.cancelBtn {
+  background: transparent;
+  color: var(--color-text-muted);
+  border-color: var(--color-border);
+}
+.cancelBtn:hover:not(:disabled) {
+  background: var(--color-error);
+  color: #fff;
+  border-color: var(--color-error);
+}
+.cancelBtn:disabled { opacity: 0.5; cursor: not-allowed; }
