@@ -10,6 +10,7 @@ npm run install:all
 
 # 2. Download the dataset
 #    https://www.kaggle.com/datasets/joebeachcapital/30000-spotify-songs
+#    create a folder named data
 #    Place the CSV at: data/spotify.csv
 
 # 3. Convert CSV → JSON (one-time)
