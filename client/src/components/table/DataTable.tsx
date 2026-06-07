@@ -1,91 +1,299 @@
-import { useRef, useCallback, useMemo, memo } from "react";
-import { useVirtualizer }   from "@tanstack/react-virtual";
-import type { SpotifyRecord }    from "../../types";
+import { useRef, useCallback, useMemo, memo, useEffect } from "react";
+import { useVirtualizer } from "@tanstack/react-virtual";
+import type { SpotifyRecord } from "../../types";
 import type { TableStateActions } from "../../hooks";
-import type { TableState }        from "../../types";
-import { ColumnHeader }           from "./ColumnHeader";
-import { Spinner }                from "../ui/Spinner";
-import { EmptyState }             from "../ui/EmptyState";
-import { ErrorState }             from "../ui/ErrorState";
-import styles                     from "./DataTable.module.css";
+import type { TableState } from "../../types";
+import { EditableCell, EDITABLE_FIELDS } from "./EditableCell";
+import { Spinner } from "../ui/Spinner";
+import { EmptyState } from "../ui/EmptyState";
+import { ErrorState } from "../ui/ErrorState";
+import styles from "./DataTable.module.css";
 
 // ─── Column definition ────────────────────────────────────────────────────────
 
 export interface ColumnDef {
-  id:       string;
-  field:    keyof SpotifyRecord;
-  label:    string;
-  width?:   number;
+  id: string;
+  field: keyof SpotifyRecord;
+  label: string;
+  width: number; // required — every column needs a fixed width for div layout
   sortable?: boolean;
-  render?:  (value: SpotifyRecord[keyof SpotifyRecord], row: SpotifyRecord) => React.ReactNode;
+  render?: (
+    value: SpotifyRecord[keyof SpotifyRecord],
+    row: SpotifyRecord,
+  ) => React.ReactNode;
 }
 
-// ─── Default columns (the visible set before user customisation) ───────────────
+// ─── Default columns ──────────────────────────────────────────────────────────
 
 export const DEFAULT_COLUMNS: ColumnDef[] = [
-  { id: "track_name",                field: "track_name",                label: "Track",       width: 220, sortable: true },
-  { id: "track_artist",              field: "track_artist",              label: "Artist",      width: 160, sortable: true },
-  { id: "track_album_name",          field: "track_album_name",          label: "Album",       width: 180, sortable: true },
-  { id: "playlist_genre",            field: "playlist_genre",            label: "Genre",       width: 100, sortable: true },
-  { id: "playlist_subgenre",         field: "playlist_subgenre",         label: "Subgenre",    width: 130, sortable: true },
-  { id: "track_popularity",          field: "track_popularity",          label: "Popularity",  width: 100, sortable: true,
-    render: (v) => <PopularityBar value={v as number} /> },
-  { id: "tempo",                     field: "tempo",                     label: "Tempo",       width: 80,  sortable: true,
-    render: (v) => `${(v as number).toFixed(0)} bpm` },
-  { id: "energy",                    field: "energy",                    label: "Energy",      width: 80,  sortable: true,
-    render: (v) => ((v as number) * 100).toFixed(0) + "%" },
-  { id: "danceability",              field: "danceability",              label: "Dance",       width: 80,  sortable: true,
-    render: (v) => ((v as number) * 100).toFixed(0) + "%" },
-  { id: "track_explicit",            field: "track_explicit",            label: "Explicit",    width: 70,  sortable: false,
-    render: (v) => v ? <span className={styles.badge}>E</span> : null },
-  { id: "track_album_release_date",  field: "track_album_release_date",  label: "Released",    width: 100, sortable: true },
-  { id: "duration_ms",               field: "duration_ms",               label: "Duration",    width: 90,  sortable: true,
-    render: (v) => formatDuration(v as number) },
+  {
+    id: "track_name",
+    field: "track_name",
+    label: "Track",
+    width: 220,
+    sortable: true,
+  },
+  {
+    id: "track_artist",
+    field: "track_artist",
+    label: "Artist",
+    width: 160,
+    sortable: true,
+  },
+  {
+    id: "track_album_name",
+    field: "track_album_name",
+    label: "Album",
+    width: 180,
+    sortable: true,
+  },
+  {
+    id: "playlist_genre",
+    field: "playlist_genre",
+    label: "Genre",
+    width: 100,
+    sortable: true,
+  },
+  {
+    id: "playlist_subgenre",
+    field: "playlist_subgenre",
+    label: "Subgenre",
+    width: 140,
+    sortable: true,
+  },
+  {
+    id: "track_popularity",
+    field: "track_popularity",
+    label: "Popularity",
+    width: 120,
+    sortable: true,
+    render: (v) => <PopularityBar value={v as number} />,
+  },
+  {
+    id: "tempo",
+    field: "tempo",
+    label: "Tempo",
+    width: 100,
+    sortable: true,
+    render: (v) => `${(v as number).toFixed(0)} bpm`,
+  },
+  {
+    id: "energy",
+    field: "energy",
+    label: "Energy",
+    width: 90,
+    sortable: true,
+    render: (v) => `${((v as number) * 100).toFixed(0)}%`,
+  },
+  {
+    id: "danceability",
+    field: "danceability",
+    label: "Dance",
+    width: 90,
+    sortable: true,
+    render: (v) => `${((v as number) * 100).toFixed(0)}%`,
+  },
+  {
+    id: "track_explicit",
+    field: "track_explicit",
+    label: "Explicit",
+    width: 80,
+    sortable: false,
+    render: (v) => (v ? <span className={styles.badge}>E</span> : null),
+  },
+  {
+    id: "track_album_release_date",
+    field: "track_album_release_date",
+    label: "Released",
+    width: 110,
+    sortable: true,
+  },
+  {
+    id: "duration_ms",
+    field: "duration_ms",
+    label: "Duration",
+    width: 90,
+    sortable: true,
+    render: (v) => formatDuration(v as number),
+  },
 ];
 
-// ─── Sub-components ───────────────────────────────────────────────────────────
+const CHECKBOX_WIDTH = 44;
+const ROW_HEIGHT = 44;
 
-const PopularityBar = memo(function PopularityBar({ value }: { value: number }) {
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+const PopularityBar = memo(function PopularityBar({
+  value,
+}: {
+  value: number;
+}) {
   return (
     <div className={styles.popBar}>
-      <div className={styles.popFill} style={{ width: `${value}%` }} />
+      <div
+        className={styles.popFill}
+        style={{ width: `${Math.min(value, 100)}%` }}
+      />
       <span className={styles.popLabel}>{value}</span>
     </div>
   );
 });
 
 function formatDuration(ms: number): string {
-  const totalSecs = Math.floor(ms / 1000);
-  const mins      = Math.floor(totalSecs / 60);
-  const secs      = totalSecs % 60;
+  const s = Math.floor(ms / 1000);
+  const mins = Math.floor(s / 60);
+  const secs = s % 60;
   return `${mins}:${secs.toString().padStart(2, "0")}`;
 }
 
-// ─── Row component (memoised to prevent re-renders on unrelated state changes) ──
+// ─── Cell ─────────────────────────────────────────────────────────────────────
 
-interface TableRowProps {
-  row:             SpotifyRecord;
-  columns:         ColumnDef[];
-  isSelected:      boolean;
-  onToggleSelect:  (id: string) => void;
-  style:           React.CSSProperties;  // from virtualizer
+interface CellProps {
+  width: number;
+  children: React.ReactNode;
+  className?: string;
 }
 
-const TableRow = memo(function TableRow({
+function Cell({ width, children, className }: CellProps) {
+  return (
+    <div
+      className={`${styles.cell} ${className ?? ""}`}
+      style={{ width, minWidth: width, maxWidth: width }}
+    >
+      {children}
+    </div>
+  );
+}
+
+// ─── Header row ───────────────────────────────────────────────────────────────
+
+interface HeaderRowProps {
+  columns: ColumnDef[];
+  sort: TableState["sort"];
+  onSort: (field: keyof SpotifyRecord) => void;
+  allPageSelected: boolean;
+  someSelected: boolean;
+  onSelectPage: () => void;
+}
+
+const HeaderRow = memo(function HeaderRow({
+  columns,
+  sort,
+  onSort,
+  allPageSelected,
+  someSelected,
+  onSelectPage,
+}: HeaderRowProps) {
+  return (
+    <div className={styles.headerRow} role="row">
+      {/* Checkbox column */}
+      <div
+        className={`${styles.headerCell} ${styles.checkCell}`}
+        style={{ width: CHECKBOX_WIDTH, minWidth: CHECKBOX_WIDTH }}
+        role="columnheader"
+      >
+        <input
+          type="checkbox"
+          className={styles.checkbox}
+          checked={allPageSelected}
+          ref={(el) => {
+            if (el) el.indeterminate = someSelected && !allPageSelected;
+          }}
+          onChange={onSelectPage}
+          aria-label="Select all rows on this page"
+        />
+      </div>
+
+      {columns.map((col) => (
+        <div
+          key={col.id}
+          className={`${styles.headerCell} ${sort.column === col.field ? styles.headerCellActive : ""} ${col.sortable ? styles.headerCellSortable : ""}`}
+          style={{ width: col.width, minWidth: col.width, maxWidth: col.width }}
+          role="columnheader"
+          aria-sort={
+            sort.column === col.field
+              ? sort.order === "asc"
+                ? "ascending"
+                : "descending"
+              : col.sortable
+                ? "none"
+                : undefined
+          }
+          onClick={() => col.sortable && onSort(col.field)}
+          onKeyDown={(e) => {
+            if (col.sortable && (e.key === "Enter" || e.key === " ")) {
+              e.preventDefault();
+              onSort(col.field);
+            }
+          }}
+          tabIndex={col.sortable ? 0 : undefined}
+        >
+          <span className={styles.headerLabel}>{col.label}</span>
+          {col.sortable && (
+            <span className={styles.sortArrow} aria-hidden>
+              {sort.column === col.field ? (
+                sort.order === "asc" ? (
+                  "↑"
+                ) : (
+                  "↓"
+                )
+              ) : (
+                <span className={styles.sortPlaceholder}>↕</span>
+              )}
+            </span>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+});
+
+// ─── Data row ────────────────────────────────────────────────────────────────
+
+interface DataRowProps {
+  row: SpotifyRecord;
+  columns: ColumnDef[];
+  isSelected: boolean;
+  editingCell: { rowId: string; column: keyof SpotifyRecord } | null;
+  onToggleSelect: (id: string) => void;
+  onStartEdit: (
+    rowId: string,
+    field: keyof SpotifyRecord,
+    value: SpotifyRecord[keyof SpotifyRecord],
+  ) => void;
+  onSave: (
+    rowId: string,
+    field: keyof SpotifyRecord,
+    value: string | number,
+  ) => Promise<void>;
+  onCancelEdit: () => void;
+  top: number; // virtualizer offset
+}
+
+const DataRow = memo(function DataRow({
   row,
   columns,
   isSelected,
+  editingCell,
   onToggleSelect,
-  style,
-}: TableRowProps) {
+  onStartEdit,
+  onSave,
+  onCancelEdit,
+  top,
+}: DataRowProps) {
   return (
-    <tr
-      className={`${styles.tr} ${isSelected ? styles.selected : ""}`}
-      style={style}
+    <div
+      className={`${styles.dataRow} ${isSelected ? styles.rowSelected : ""}`}
+      style={{ transform: `translateY(${top}px)` }}
+      role="row"
       aria-selected={isSelected}
     >
-      {/* Checkbox cell */}
-      <td className={styles.checkCell}>
+      {/* Checkbox */}
+      <div
+        className={`${styles.cell} ${styles.checkCell}`}
+        style={{ width: CHECKBOX_WIDTH, minWidth: CHECKBOX_WIDTH }}
+        role="gridcell"
+      >
         <input
           type="checkbox"
           className={styles.checkbox}
@@ -93,40 +301,67 @@ const TableRow = memo(function TableRow({
           onChange={() => onToggleSelect(row.id)}
           aria-label={`Select ${row.track_name}`}
         />
-      </td>
+      </div>
 
       {/* Data cells */}
       {columns.map((col) => {
         const value = row[col.field];
+        const isEditable = col.field in EDITABLE_FIELDS;
+        const isEditing =
+          editingCell?.rowId === row.id && editingCell?.column === col.field;
+
         return (
-          <td
+          <div
             key={col.id}
-            className={styles.td}
-            style={col.width ? { width: col.width, minWidth: col.width } : undefined}
+            className={`${styles.cell} ${isEditing ? styles.cellEditing : ""}`}
+            style={{
+              width: col.width,
+              minWidth: col.width,
+              maxWidth: col.width,
+            }}
+            role="gridcell"
           >
-            {col.render ? col.render(value, row) : String(value ?? "")}
-          </td>
+            {isEditable ? (
+              <EditableCell
+                rowId={row.id}
+                field={col.field}
+                value={value}
+                isEditing={isEditing}
+                onStartEdit={onStartEdit}
+                onSave={onSave}
+                onCancel={onCancelEdit}
+              />
+            ) : col.render ? (
+              col.render(value, row)
+            ) : (
+              <span className={styles.cellText}>{String(value ?? "")}</span>
+            )}
+          </div>
         );
       })}
-    </tr>
+    </div>
   );
 });
 
-// ─── Main DataTable ───────────────────────────────────────────────────────────
+// ─── DataTable ────────────────────────────────────────────────────────────────
 
 interface DataTableProps {
-  records:      SpotifyRecord[];
-  totalCount:   number;
-  columns:      ColumnDef[];
-  state:        TableState;
-  actions:      TableStateActions;
-  isLoading:    boolean;
-  isError:      boolean;
+  records: SpotifyRecord[];
+  setRecords: React.Dispatch<React.SetStateAction<SpotifyRecord[]>>;
+  totalCount: number;
+  columns: ColumnDef[];
+  state: TableState;
+  actions: TableStateActions;
+  isLoading: boolean;
+  isError: boolean;
   errorMessage: string;
-  onRetry:      () => void;
+  onRetry: () => void;
+  onSave: (
+    rowId: string,
+    field: keyof SpotifyRecord,
+    value: string | number,
+  ) => Promise<void>;
 }
-
-const ROW_HEIGHT = 44; // px — must match CSS
 
 export function DataTable({
   records,
@@ -138,111 +373,125 @@ export function DataTable({
   isError,
   errorMessage,
   onRetry,
+  onSave,
 }: DataTableProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
 
+  // Reset scroll on page/filter change
+  useEffect(() => {
+    scrollRef.current?.scrollTo({ top: 0 });
+  }, [state.pagination.page, state.filters]);
+
   // ── Virtualizer ───────────────────────────────────────────────────────────
   const virtualizer = useVirtualizer({
-    count:          records.length,
+    count: records.length,
     getScrollElement: () => scrollRef.current,
-    estimateSize:   () => ROW_HEIGHT,
-    overscan:       10, // renders 10 rows above/below viewport — reduces blank flash on fast scroll
+    estimateSize: () => ROW_HEIGHT,
+    overscan: 10,
   });
 
-  const virtualItems  = virtualizer.getVirtualItems();
-  const totalHeight   = virtualizer.getTotalSize();
+  const virtualItems = virtualizer.getVirtualItems();
+  const totalHeight = virtualizer.getTotalSize();
 
-  // ── Selection helpers ─────────────────────────────────────────────────────
-  const pageIds      = useMemo(() => records.map((r) => r.id), [records]);
-  const allPageSelected = pageIds.length > 0 &&
+  // ── Total row width (for horizontal scroll) ───────────────────────────────
+  const totalRowWidth = useMemo(
+    () => CHECKBOX_WIDTH + columns.reduce((sum, c) => sum + c.width, 0),
+    [columns],
+  );
+
+  // ── Selection ─────────────────────────────────────────────────────────────
+  const pageIds = useMemo(() => records.map((r) => r.id), [records]);
+  const allPageSelected =
+    pageIds.length > 0 &&
     pageIds.every((id) => state.selection.selectedIds.has(id));
-  const someSelected = pageIds.some((id) => state.selection.selectedIds.has(id));
+  const someSelected = pageIds.some((id) =>
+    state.selection.selectedIds.has(id),
+  );
+  const handleSelectPage = useCallback(
+    () => actions.selectPage(pageIds),
+    [actions, pageIds],
+  );
 
-  const handleSelectAll = useCallback(() => {
-    actions.selectPage(pageIds);
-  }, [actions, pageIds]);
+  const editingCell = state.editing
+    ? { rowId: state.editing.rowId, column: state.editing.column }
+    : null;
 
-  // ── States ────────────────────────────────────────────────────────────────
-  if (isError) {
-    return <ErrorState message={errorMessage} onRetry={onRetry} />;
-  }
-
-  const showEmpty = !isLoading && records.length === 0;
+  if (isError) return <ErrorState message={errorMessage} onRetry={onRetry} />;
 
   return (
     <div className={styles.wrapper}>
-      {/* Scrollable viewport — virtualizer attaches here */}
-      <div ref={scrollRef} className={styles.scroll}>
+      {/* Sticky header — outside the scroll container so it never scrolls vertically,
+          but shares horizontal scroll position via synced scrollLeft */}
+      <div
+        className={styles.headerScroll}
+        ref={(el) => {
+          // Sync horizontal scroll between header and body
+          const body = scrollRef.current;
+          if (!el || !body) return;
+          const onBodyScroll = () => {
+            el.scrollLeft = body.scrollLeft;
+          };
+          body.addEventListener("scroll", onBodyScroll, { passive: true });
+        }}
+      >
+        <div style={{ width: totalRowWidth, minWidth: totalRowWidth }}>
+          <HeaderRow
+            columns={columns}
+            sort={state.sort}
+            onSort={actions.setSort}
+            allPageSelected={allPageSelected}
+            someSelected={someSelected}
+            onSelectPage={handleSelectPage}
+          />
+        </div>
+      </div>
 
-        {/* Loading overlay — shown on top of stale rows during refetch */}
+      {/* Scrollable body */}
+      <div ref={scrollRef} className={styles.bodyScroll}>
         {isLoading && (
-          <div className={styles.loadingOverlay} aria-live="polite" aria-label="Loading rows">
+          <div className={styles.loadingOverlay}>
             <Spinner size="lg" />
           </div>
         )}
 
-        <table className={styles.table} role="grid" aria-rowcount={totalCount}>
-          <thead>
-            <tr className={styles.headerRow}>
-              {/* Select-all checkbox */}
-              <th className={`${styles.th} ${styles.checkCell}`}>
-                <input
-                  type="checkbox"
-                  className={styles.checkbox}
-                  checked={allPageSelected}
-                  ref={(el) => {
-                    if (el) el.indeterminate = someSelected && !allPageSelected;
-                  }}
-                  onChange={handleSelectAll}
-                  aria-label="Select all rows on this page"
-                />
-              </th>
+        {/* Inner container — sets total scroll width and height */}
+        <div
+          role="grid"
+          aria-rowcount={totalCount}
+          style={{
+            width: totalRowWidth,
+            minWidth: totalRowWidth,
+            height: totalHeight,
+            position: "relative",
+          }}
+        >
+          {virtualItems.map((vItem) => {
+            const row = records[vItem.index];
+            if (!row) return null;
+            return (
+              <DataRow
+                key={row.id}
+                row={row}
+                columns={columns}
+                isSelected={state.selection.selectedIds.has(row.id)}
+                editingCell={editingCell}
+                onToggleSelect={actions.toggleRow}
+                onStartEdit={actions.startEdit}
+                onSave={onSave}
+                onCancelEdit={actions.cancelEdit}
+                top={vItem.start}
+              />
+            );
+          })}
+        </div>
 
-              {columns.map((col) => (
-                <ColumnHeader
-                  key={col.id}
-                  label={col.label}
-                  field={col.field}
-                  sort={state.sort}
-                  onSort={actions.setSort}
-                  width={col.width}
-                  sortable={col.sortable}
-                />
-              ))}
-            </tr>
-          </thead>
-
-          <tbody
-            style={{ height: totalHeight, position: "relative" }}
-          >
-            {/* Spacer fills virtual scroll height so the scrollbar is correct */}
-            {virtualItems.map((vItem) => {
-              const row = records[vItem.index];
-              if (!row) return null;
-              return (
-                <TableRow
-                  key={row.id}
-                  row={row}
-                  columns={columns}
-                  isSelected={state.selection.selectedIds.has(row.id)}
-                  onToggleSelect={actions.toggleRow}
-                  style={{
-                    position:  "absolute",
-                    top:       vItem.start,
-                    left:      0,
-                    width:     "100%",
-                    height:    ROW_HEIGHT,
-                  }}
-                />
-              );
-            })}
-          </tbody>
-        </table>
-
-        {showEmpty && (
+        {!isLoading && records.length === 0 && (
           <EmptyState
             action={
-              <button className={styles.clearBtn} onClick={actions.clearFilters}>
+              <button
+                className={styles.clearBtn}
+                onClick={actions.clearFilters}
+              >
                 Clear all filters
               </button>
             }

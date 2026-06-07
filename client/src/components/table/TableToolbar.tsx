@@ -3,7 +3,7 @@ import { SearchBar }          from "../filters/SearchBar";
 import { TextFilter }         from "../filters/TextFilter";
 import { MultiSelectFilter }  from "../filters/MultiSelectFilter";
 import { RangeFilter }        from "../filters/RangeFilter";
-import type { FilterState, TableStateActions } from "../../types";
+import type { FilterState } from "../../types";
 import type { TableStateActions as Actions }   from "../../hooks";
 import styles from "./TableToolbar.module.css";
 
