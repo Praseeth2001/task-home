@@ -8,6 +8,7 @@ import { Spinner } from "../ui/Spinner";
 import { EmptyState } from "../ui/EmptyState";
 import { ErrorState } from "../ui/ErrorState";
 import styles from "./DataTable.module.css";
+import { useTheme } from "../../hooks";
 
 // ─── Column definition ────────────────────────────────────────────────────────
 
@@ -122,6 +123,13 @@ const CHECKBOX_WIDTH = 44;
 const ROW_HEIGHT = 44;
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
+
+function getPopularityColor(value: number, theme?: string): string {
+  if (value >= 85) return "#22d36a";
+  if (value >= 70) return theme === "dark" ? "#86efac" : "#0ac03e";
+  if (value > 55) return theme === "dark" ? "#fbbf24" : "#c8940e";
+  return "#f87171";
+}
 
 const PopularityBar = memo(function PopularityBar({
   value,
@@ -269,6 +277,7 @@ interface DataRowProps {
   onCancelEdit: () => void;
   onRowClick: (id: string) => void;
   top: number; // virtualizer offset
+  isPopularity: Boolean;
 }
 
 const DataRow = memo(function DataRow({
@@ -282,7 +291,9 @@ const DataRow = memo(function DataRow({
   onCancelEdit,
   top,
   onRowClick,
+  isPopularity
 }: DataRowProps) {
+  const { theme } = useTheme();
   return (
     <div
       className={`${styles.dataRow} ${isSelected ? styles.rowSelected : ""}`}
@@ -325,6 +336,7 @@ const DataRow = memo(function DataRow({
               width: col.width,
               minWidth: col.width,
               maxWidth: col.width,
+              color: isPopularity ? getPopularityColor(row.track_popularity, theme) : ""
             }}
             role="gridcell"
           >
@@ -341,7 +353,11 @@ const DataRow = memo(function DataRow({
             ) : col.render ? (
               col.render(value, row)
             ) : (
-              <span className={styles.cellText}>{String(value ?? "")}</span>
+              <span
+                className={styles.cellText}
+              >
+                {String(value ?? "")}
+              </span>
             )}
           </div>
         );
@@ -427,6 +443,9 @@ export function DataTable({
 
   if (isError) return <ErrorState message={errorMessage} onRetry={onRetry} />;
 
+  const isPopularity = !!columns.find(ele => ele.id === "track_popularity");
+
+
   return (
     <div className={styles.wrapper}>
       <div
@@ -485,6 +504,7 @@ export function DataTable({
                 onCancelEdit={actions.cancelEdit}
                 onRowClick={onRowClick}
                 top={vItem.start}
+                isPopularity={isPopularity}
               />
             );
           })}

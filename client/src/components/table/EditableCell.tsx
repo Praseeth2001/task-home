@@ -133,9 +133,9 @@ export function EditableCell({
         title={`Click to edit ${field.replace(/_/g, " ")}`}
         aria-label={`Edit ${field.replace(/_/g, " ")}: ${value}`}
       >
-        <span className={styles.triggerText}>{String(value ?? "")}</span>
-        <span className={styles.pencil} aria-hidden>
-          ✎
+        <span className={styles.triggerText}>
+          {String(value ?? "")}
+          {field === "track_popularity" ? "%" : ""}
         </span>
       </button>
     );

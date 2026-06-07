@@ -7,6 +7,13 @@ import { ErrorState } from "../components/ui/ErrorState";
 import type { SpotifyRecord } from "../types";
 import styles from "./TrackDetailPage.module.css";
 
+function getPopularityColor(value: number): string {
+  if (value >= 85) return "#22d36a";
+  if (value >= 70) return "#86efac";
+  if (value >= 50) return "#fbbf24";
+  return "#f87171";
+}
+
 // Fields shown in view + edit mode, with metadata
 const FIELD_GROUPS: {
   heading: string;
@@ -378,14 +385,14 @@ export function TrackDetailPage() {
 
         {/* Popularity meter */}
         <div className={styles.popularityMeter}>
-          <span className={styles.popularityNum}>
-            {record.track_popularity}
+          <span className={styles.popularityNum} style={{ color: getPopularityColor(record.track_popularity) }}>
+            {record.track_popularity} %
           </span>
           <span className={styles.popularityLabel}>popularity</span>
           <div className={styles.popularityTrack}>
             <div
               className={styles.popularityFill}
-              style={{ height: `${record.track_popularity}%` }}
+              style={{ height: `${record.track_popularity}%`, background: getPopularityColor(record.track_popularity) }}
             />
           </div>
         </div>
