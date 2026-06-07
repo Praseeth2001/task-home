@@ -18,14 +18,21 @@
   transition: border-color 0.15s, color 0.15s;
   white-space: nowrap;
 }
+
 .trigger:hover,
 .triggerOpen {
   border-color: var(--color-accent);
   color: var(--color-text);
 }
 
-.icon  { font-size: 1rem; line-height: 1; }
-.label { font-size: 0.8rem; }
+.icon {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.label {
+  font-size: 0.8rem;
+}
 
 .hiddenBadge {
   font-size: 0.68rem;
@@ -76,6 +83,7 @@
   border-radius: var(--radius-sm);
   transition: color 0.15s, background 0.15s;
 }
+
 .resetBtn:hover {
   color: var(--color-accent);
   background: var(--color-accent-subtle);
@@ -108,12 +116,20 @@
   transition: background 0.1s;
   user-select: none;
 }
-.item:hover    { background: var(--color-surface-hover); }
-.item:active   { cursor: grabbing; }
+
+.item:hover {
+  background: var(--color-surface-hover);
+}
+
+.item:active {
+  cursor: grabbing;
+}
+
 .item.dragOver {
   border-top-color: var(--color-accent);
   background: var(--color-accent-subtle);
 }
+
 .item.hidden .colLabel {
   color: var(--color-text-subtle);
   text-decoration: line-through;

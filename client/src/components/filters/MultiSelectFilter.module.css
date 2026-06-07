@@ -30,7 +30,11 @@
   gap: 6px;
   transition: border-color 0.15s;
 }
-.trigger:hover { border-color: var(--color-accent); }
+
+.trigger:hover {
+  border-color: var(--color-accent);
+}
+
 .active .trigger {
   border-color: color-mix(in srgb, var(--color-accent) 50%, var(--color-border));
 }
@@ -44,7 +48,9 @@
   text-overflow: ellipsis;
 }
 
-.placeholder { color: var(--color-text-subtle); }
+.placeholder {
+  color: var(--color-text-subtle);
+}
 
 .badge {
   display: inline-flex;
@@ -67,7 +73,10 @@
   transition: transform 0.15s;
   flex-shrink: 0;
 }
-.caretOpen { transform: rotate(180deg); }
+
+.caretOpen {
+  transform: rotate(180deg);
+}
 
 /* ── Dropdown ─────────────────────────────────────────────────────────────── */
 .dropdown {
@@ -88,6 +97,7 @@
   padding: 8px;
   border-bottom: 1px solid var(--color-border-faint);
 }
+
 .searchInput {
   width: 100%;
   height: 26px;
@@ -99,7 +109,10 @@
   font-size: 0.8rem;
   outline: none;
 }
-.searchInput:focus { border-color: var(--color-accent); }
+
+.searchInput:focus {
+  border-color: var(--color-accent);
+}
 
 .list {
   list-style: none;
@@ -108,7 +121,9 @@
   padding: 4px 0;
 }
 
-.item { padding: 0; }
+.item {
+  padding: 0;
+}
 
 .optionLabel {
   display: flex;
@@ -120,8 +135,14 @@
   color: var(--color-text);
   transition: background 0.1s;
 }
-.optionLabel:hover { background: var(--color-surface-hover); }
-.optionLabel.checked { color: var(--color-accent); }
+
+.optionLabel:hover {
+  background: var(--color-surface-hover);
+}
+
+.optionLabel.checked {
+  color: var(--color-accent);
+}
 
 .checkbox {
   width: 13px;
@@ -158,4 +179,7 @@
   border-radius: var(--radius-sm);
   transition: color 0.15s;
 }
-.clearAll:hover { color: var(--color-error); }
+
+.clearAll:hover {
+  color: var(--color-error);
+}

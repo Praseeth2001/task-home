@@ -3,9 +3,9 @@ import type { SpotifyRecord } from "../../types";
 import styles from "./MultiSelectFilter.module.css";
 
 interface MultiSelectFilterProps {
-  field:    keyof SpotifyRecord;
-  label:    string;
-  options:  string[];
+  field: keyof SpotifyRecord;
+  label: string;
+  options: string[];
   selected: string[];
   onChange: (field: keyof SpotifyRecord, values: string[]) => void;
 }
@@ -22,10 +22,10 @@ export function MultiSelectFilter({
   selected,
   onChange,
 }: MultiSelectFilterProps) {
-  const [open, setOpen]       = useState(false);
-  const [query, setQuery]     = useState("");
-  const rootRef               = useRef<HTMLDivElement>(null);
-  const isActive              = selected.length > 0;
+  const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  const rootRef = useRef<HTMLDivElement>(null);
+  const isActive = selected.length > 0;
 
   // Close on click-outside
   useEffect(() => {
@@ -56,17 +56,20 @@ export function MultiSelectFilter({
         : [...selected, option];
       onChange(field, next);
     },
-    [field, selected, onChange]
+    [field, selected, onChange],
   );
 
   const clearAll = useCallback(() => onChange(field, []), [field, onChange]);
 
   const filtered = options.filter((o) =>
-    o.toLowerCase().includes(query.toLowerCase())
+    o.toLowerCase().includes(query.toLowerCase()),
   );
 
   return (
-    <div ref={rootRef} className={`${styles.root} ${isActive ? styles.active : ""}`}>
+    <div
+      ref={rootRef}
+      className={`${styles.root} ${isActive ? styles.active : ""}`}
+    >
       <span className={styles.labelText}>{label}</span>
       <button
         className={styles.trigger}
@@ -80,19 +83,28 @@ export function MultiSelectFilter({
           {isActive ? (
             <>
               <span className={styles.badge}>{selected.length}</span>
-              {selected.length === 1 ? selected[0] : `${selected.length} selected`}
+              {selected.length === 1
+                ? selected[0]
+                : `${selected.length} selected`}
             </>
           ) : (
             <span className={styles.placeholder}>Any</span>
           )}
         </span>
-        <span className={`${styles.caret} ${open ? styles.caretOpen : ""}`} aria-hidden>
+        <span
+          className={`${styles.caret} ${open ? styles.caretOpen : ""}`}
+          aria-hidden
+        >
           ▾
         </span>
       </button>
 
       {open && (
-        <div className={styles.dropdown} role="listbox" aria-multiselectable="true">
+        <div
+          className={styles.dropdown}
+          role="listbox"
+          aria-multiselectable="true"
+        >
           {/* Search within options */}
           {options.length > 8 && (
             <div className={styles.searchWrap}>
@@ -116,7 +128,9 @@ export function MultiSelectFilter({
               const checked = selected.includes(option);
               return (
                 <li key={option} className={styles.item}>
-                  <label className={`${styles.optionLabel} ${checked ? styles.checked : ""}`}>
+                  <label
+                    className={`${styles.optionLabel} ${checked ? styles.checked : ""}`}
+                  >
                     <input
                       type="checkbox"
                       className={styles.checkbox}
@@ -133,7 +147,11 @@ export function MultiSelectFilter({
 
           {isActive && (
             <div className={styles.footer}>
-              <button className={styles.clearAll} type="button" onClick={clearAll}>
+              <button
+                className={styles.clearAll}
+                type="button"
+                onClick={clearAll}
+              >
                 Clear all
               </button>
             </div>

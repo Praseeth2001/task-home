@@ -3,17 +3,16 @@ import type { ColumnPreference } from "../../types";
 import styles from "./ColumnManager.module.css";
 
 interface ColumnManagerProps {
-  prefs:          ColumnPreference[];
-  onToggle:       (id: string) => void;
-  onReorder:      (fromId: string, toId: string) => void;
-  onReset:        () => void;
-  columnLabels:   Record<string, string>;   // id → display label
+  prefs: ColumnPreference[];
+  onToggle: (id: string) => void;
+  onReorder: (fromId: string, toId: string) => void;
+  onReset: () => void;
+  columnLabels: Record<string, string>;
 }
 
-/**
+/*
  * Dropdown panel for column visibility and drag-to-reorder.
  *
- * Drag-and-drop uses the HTML5 Drag API — no library needed.
  * Closes on Escape / click-outside.
  */
 export function ColumnManager({
@@ -23,10 +22,10 @@ export function ColumnManager({
   onReset,
   columnLabels,
 }: ColumnManagerProps) {
-  const [open, setOpen]           = useState(false);
-  const [dragOver, setDragOver]   = useState<string | null>(null);
-  const dragId                    = useRef<string | null>(null);
-  const rootRef                   = useRef<HTMLDivElement>(null);
+  const [open, setOpen] = useState(false);
+  const [dragOver, setDragOver] = useState<string | null>(null);
+  const dragId = useRef<string | null>(null);
+  const rootRef = useRef<HTMLDivElement>(null);
 
   const sorted = [...prefs].sort((a, b) => a.order - b.order);
   const visibleCount = prefs.filter((c) => c.visible).length;
@@ -46,28 +45,32 @@ export function ColumnManager({
   // Close on Escape
   useEffect(() => {
     if (!open) return;
-    const handler = (e: KeyboardEvent) => { if (e.key === "Escape") setOpen(false); };
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
     document.addEventListener("keydown", handler);
     return () => document.removeEventListener("keydown", handler);
   }, [open]);
 
-  // ── Drag handlers ─────────────────────────────────────────────────────────
   const handleDragStart = useCallback((id: string) => {
     dragId.current = id;
   }, []);
 
   const handleDragOver = useCallback((e: React.DragEvent, id: string) => {
-    e.preventDefault();   // required to allow drop
+    e.preventDefault();
     setDragOver(id);
   }, []);
 
-  const handleDrop = useCallback((toId: string) => {
-    if (dragId.current && dragId.current !== toId) {
-      onReorder(dragId.current, toId);
-    }
-    dragId.current = null;
-    setDragOver(null);
-  }, [onReorder]);
+  const handleDrop = useCallback(
+    (toId: string) => {
+      if (dragId.current && dragId.current !== toId) {
+        onReorder(dragId.current, toId);
+      }
+      dragId.current = null;
+      setDragOver(null);
+    },
+    [onReorder],
+  );
 
   const handleDragEnd = useCallback(() => {
     dragId.current = null;
@@ -85,7 +88,9 @@ export function ColumnManager({
         aria-label="Manage columns"
         title="Manage columns"
       >
-        <span className={styles.icon} aria-hidden>⊞</span>
+        <span className={styles.icon} aria-hidden>
+          ⊞
+        </span>
         <span className={styles.label}>Columns</span>
         {visibleCount < prefs.length && (
           <span className={styles.hiddenBadge}>
@@ -116,8 +121,8 @@ export function ColumnManager({
 
           <ul className={styles.list}>
             {sorted.map((pref) => {
-              const label   = columnLabels[pref.id] ?? pref.id;
-              const isOver  = dragOver === pref.id;
+              const label = columnLabels[pref.id] ?? pref.id;
+              const isOver = dragOver === pref.id;
 
               return (
                 <li
@@ -130,7 +135,9 @@ export function ColumnManager({
                   onDragEnd={handleDragEnd}
                 >
                   {/* Drag handle */}
-                  <span className={styles.dragHandle} aria-hidden>⋮⋮</span>
+                  <span className={styles.dragHandle} aria-hidden>
+                    ⋮⋮
+                  </span>
 
                   {/* Visibility toggle */}
                   <label className={styles.checkLabel}>

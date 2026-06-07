@@ -11,8 +11,6 @@
 }
 
 /* ── Header scroll container ────────────────────────────────────────────── */
-/* overflow-x hidden so the scrollbar doesn't show here —
-   header scrollLeft is synced to body via JS */
 .headerScroll {
   flex-shrink: 0;
   overflow-x: hidden;
@@ -30,8 +28,16 @@
   scrollbar-width: thin;
   scrollbar-color: var(--color-border) transparent;
 }
-.bodyScroll::-webkit-scrollbar       { width: 6px; height: 6px; }
-.bodyScroll::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 3px; }
+
+.bodyScroll::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.bodyScroll::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 3px;
+}
 
 /* ── Loading overlay ────────────────────────────────────────────────────── */
 .loadingOverlay {
@@ -52,7 +58,6 @@
   flex-direction: row;
   align-items: center;
   height: 40px;
-  /* no overflow here — parent .headerScroll clips it */
 }
 
 .headerCell {
@@ -66,20 +71,37 @@
   user-select: none;
   border-right: 1px solid var(--color-border-faint);
 }
-.headerCell:last-child { border-right: none; }
+
+.headerCell:last-child {
+  border-right: none;
+}
 
 .headerCellSortable {
   cursor: pointer;
 }
-.headerCellSortable:hover .headerLabel { color: var(--color-accent); }
-.headerCellSortable:hover .sortArrow   { opacity: 1; }
+
+.headerCellSortable:hover .headerLabel {
+  color: var(--color-accent);
+}
+
+.headerCellSortable:hover .sortArrow {
+  opacity: 1;
+}
+
 .headerCellSortable:focus-visible {
   outline: 2px solid var(--color-accent);
   outline-offset: -2px;
 }
 
-.headerCellActive .headerLabel { color: var(--color-accent); font-weight: 600; }
-.headerCellActive .sortArrow   { opacity: 1; color: var(--color-accent); }
+.headerCellActive .headerLabel {
+  color: var(--color-accent);
+  font-weight: 600;
+}
+
+.headerCellActive .sortArrow {
+  opacity: 1;
+  color: var(--color-accent);
+}
 
 .headerLabel {
   font-size: 0.72rem;
@@ -100,11 +122,12 @@
   flex-shrink: 0;
   line-height: 1;
 }
-.sortPlaceholder { opacity: 0.25; }
+
+.sortPlaceholder {
+  opacity: 0.25;
+}
 
 /* ── Data rows ──────────────────────────────────────────────────────────── */
-/* Rows are absolutely positioned by the virtualizer via translateY.
-   Using transform instead of top/left avoids layout recalculations. */
 .dataRow {
   position: absolute;
   top: 0;
@@ -115,11 +138,20 @@
   height: 44px;
   border-bottom: 1px solid var(--color-border-faint);
   transition: background 0.1s;
-  will-change: transform;   /* hint GPU compositing for scroll performance */
+  will-change: transform;
 }
-.dataRow:hover    { background: var(--color-surface-hover); }
-.rowSelected      { background: var(--color-accent-subtle) !important; }
-.rowSelected:hover { background: var(--color-accent-subtle-hover) !important; }
+
+.dataRow:hover {
+  background: var(--color-surface-hover);
+}
+
+.rowSelected {
+  background: var(--color-accent-subtle) !important;
+}
+
+.rowSelected:hover {
+  background: var(--color-accent-subtle-hover) !important;
+}
 
 /* ── Cells ──────────────────────────────────────────────────────────────── */
 .cell {
@@ -128,14 +160,16 @@
   height: 44px;
   padding: 0 12px;
   flex-shrink: 0;
-  overflow: hidden;       /* clip content to column width */
+  overflow: hidden;
   border-right: 1px solid var(--color-border-faint);
   font-size: 0.84rem;
   color: var(--color-text);
 }
-.cell:last-child { border-right: none; }
 
-/* Editing cell needs overflow visible for the error tooltip */
+.cell:last-child {
+  border-right: none;
+}
+
 .cellEditing {
   overflow: visible !important;
   z-index: 5;
@@ -170,6 +204,7 @@
   gap: 6px;
   width: 100%;
 }
+
 .popFill {
   height: 3px;
   background: var(--color-accent);
@@ -177,6 +212,7 @@
   flex-shrink: 0;
   max-width: 60px;
 }
+
 .popLabel {
   font-size: 0.78rem;
   color: var(--color-text-muted);
@@ -209,4 +245,7 @@
   cursor: pointer;
   transition: background 0.15s;
 }
-.clearBtn:hover { background: var(--color-surface-hover); }
+
+.clearBtn:hover {
+  background: var(--color-surface-hover);
+}

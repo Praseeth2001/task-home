@@ -1,29 +1,38 @@
 import { memo } from "react";
-import { SearchBar }          from "../filters/SearchBar";
-import { TextFilter }         from "../filters/TextFilter";
-import { MultiSelectFilter }  from "../filters/MultiSelectFilter";
-import { RangeFilter }        from "../filters/RangeFilter";
+import { SearchBar } from "../filters/SearchBar";
+import { TextFilter } from "../filters/TextFilter";
+import { MultiSelectFilter } from "../filters/MultiSelectFilter";
+import { RangeFilter } from "../filters/RangeFilter";
 import type { FilterState } from "../../types";
-import type { TableStateActions as Actions }   from "../../hooks";
+import type { TableStateActions as Actions } from "../../hooks";
 import styles from "./TableToolbar.module.css";
 
-// Genre options from the Spotify dataset
-export const GENRE_OPTIONS = [
-  "edm", "latin", "pop", "r&b", "rap", "rock",
-];
+export const GENRE_OPTIONS = ["edm", "latin", "pop", "r&b", "rap", "rock"];
 
 export const SUBGENRE_OPTIONS = [
-  "big room", "dance pop", "electro house", "hip hop",
-  "indie pop", "latin hip hop", "latin pop", "neo soul",
-  "new jack swing", "permanent wave", "pop", "post-teen pop",
-  "progressive electro house", "reggaeton", "southern hip hop",
-  "trap", "urban contemporary",
+  "big room",
+  "dance pop",
+  "electro house",
+  "hip hop",
+  "indie pop",
+  "latin hip hop",
+  "latin pop",
+  "neo soul",
+  "new jack swing",
+  "permanent wave",
+  "pop",
+  "post-teen pop",
+  "progressive electro house",
+  "reggaeton",
+  "southern hip hop",
+  "trap",
+  "urban contemporary",
 ];
 
 interface TableToolbarProps {
-  filters:      FilterState;
-  actions:      Actions;
-  activeCount:  number;         // how many filters are active (for badge)
+  filters: FilterState;
+  actions: Actions;
+  activeCount: number;
 }
 
 /**
@@ -42,22 +51,22 @@ export const TableToolbar = memo(function TableToolbar({
   const hasAnyFilter =
     filters.search.trim() ||
     Object.values(filters.textFilters).some((v) => v?.trim()) ||
-    Object.values(filters.multiSelect).some((v) => (v as string[])?.length > 0) ||
-    Object.values(filters.numericRange).some((v) => v?.min !== undefined || v?.max !== undefined);
+    Object.values(filters.multiSelect).some(
+      (v) => (v as string[])?.length > 0,
+    ) ||
+    Object.values(filters.numericRange).some(
+      (v) => v?.min !== undefined || v?.max !== undefined,
+    );
 
   return (
     <div className={styles.toolbar} role="search" aria-label="Table filters">
       {/* Global search — always visible and prominent */}
-      <SearchBar
-        value={filters.search}
-        onChange={actions.setSearch}
-      />
+      <SearchBar value={filters.search} onChange={actions.setSearch} />
 
       <div className={styles.divider} aria-hidden />
 
       {/* ── Column-specific filters ──────────────────────────────────────── */}
       <div className={styles.filters}>
-
         {/* Text filter: Artist */}
         <TextFilter
           field="track_artist"

@@ -17,18 +17,17 @@ export type ExportStatus = "idle" | "fetching" | "done" | "error";
  * while exporting cancels the in-flight request.
  */
 export function useExport() {
-  const [status, setStatus]         = useState<ExportStatus>("idle");
-  const [error, setError]           = useState<string | null>(null);
-  const abortRef                    = useRef<AbortController | null>(null);
+  const [status, setStatus] = useState<ExportStatus>("idle");
+  const [error, setError] = useState<string | null>(null);
+  const abortRef = useRef<AbortController | null>(null);
 
   const exportCsv = useCallback(
     async (
-      sort:             SortState,
-      filters:          FilterState,
-      visibleColumns:   (keyof SpotifyRecord)[],
-      filenamePrefix =  "spotify-export"
+      sort: SortState,
+      filters: FilterState,
+      visibleColumns: (keyof SpotifyRecord)[],
+      filenamePrefix = "spotify-export",
     ) => {
-      // Cancel any in-flight export
       abortRef.current?.abort();
       const controller = new AbortController();
       abortRef.current = controller;
@@ -40,11 +39,11 @@ export function useExport() {
         const records = await fetchAllMatchingRecords(
           sort,
           filters,
-          controller.signal
+          controller.signal,
         );
 
-        const csv      = recordsToCsv(records, visibleColumns);
-        const date     = new Date().toISOString().slice(0, 10);
+        const csv = recordsToCsv(records, visibleColumns);
+        const date = new Date().toISOString().slice(0, 10);
         const filename = `${filenamePrefix}-${date}.csv`;
 
         downloadCsv(csv, filename);
@@ -61,7 +60,7 @@ export function useExport() {
         setStatus("error");
       }
     },
-    []
+    [],
   );
 
   const cancelExport = useCallback(() => {

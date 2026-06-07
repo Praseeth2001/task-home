@@ -33,7 +33,7 @@ describe("tableReducer — sorting", () => {
     });
     const after2 = tableReducer(
       { ...after1, sort: { column: "track_popularity", order: "desc" } },
-      { type: "SET_SORT", column: "tempo" }
+      { type: "SET_SORT", column: "tempo" },
     );
     expect(after2.sort.column).toBe("tempo");
     expect(after2.sort.order).toBe("asc");
@@ -116,9 +116,9 @@ describe("tableReducer — filtering", () => {
     });
     const cleared = tableReducer(dirty, { type: "CLEAR_FILTERS" });
     expect(cleared.filters).toEqual({
-      search:       "",
-      textFilters:  {},
-      multiSelect:  {},
+      search: "",
+      textFilters: {},
+      multiSelect: {},
       numericRange: {},
     });
   });
@@ -196,7 +196,7 @@ describe("tableReducer — bulk selection", () => {
 
   it("CLEAR_SELECTION empties ids and scope", () => {
     const selected = tableReducer(INITIAL_TABLE_STATE, { type: "SELECT_ALL" });
-    const cleared  = tableReducer(selected, { type: "CLEAR_SELECTION" });
+    const cleared = tableReducer(selected, { type: "CLEAR_SELECTION" });
     expect(cleared.selection.selectedIds.size).toBe(0);
     expect(cleared.selection.scope).toBeNull();
   });

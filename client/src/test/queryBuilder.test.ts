@@ -3,11 +3,11 @@ import { buildQueryParams } from "../utils/queryBuilder";
 import type { PaginationState, SortState, FilterState } from "../types";
 
 const BASE_PAGINATION: PaginationState = { page: 1, limit: 50 };
-const NO_SORT:         SortState       = { column: null, order: "asc" };
-const NO_FILTERS:      FilterState     = {
-  search:       "",
-  textFilters:  {},
-  multiSelect:  {},
+const NO_SORT: SortState = { column: null, order: "asc" };
+const NO_FILTERS: FilterState = {
+  search: "",
+  textFilters: {},
+  multiSelect: {},
   numericRange: {},
 };
 
@@ -82,12 +82,16 @@ describe("buildQueryParams", () => {
 
   it("combines multiple filter types simultaneously", () => {
     const filters: FilterState = {
-      search:      "top hits",
+      search: "top hits",
       textFilters: { track_artist: "swift" },
       multiSelect: { playlist_genre: ["pop"] },
       numericRange: { track_popularity: { min: 70 } },
     };
-    const p = buildQueryParams({ page: 2, limit: 25 }, { column: "tempo", order: "asc" }, filters);
+    const p = buildQueryParams(
+      { page: 2, limit: 25 },
+      { column: "tempo", order: "asc" },
+      filters,
+    );
     expect(p.get("q")).toBe("top hits");
     expect(p.get("track_artist_like")).toBe("swift");
     expect(p.getAll("playlist_genre")).toEqual(["pop"]);

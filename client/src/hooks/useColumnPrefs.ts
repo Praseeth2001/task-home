@@ -12,10 +12,9 @@ const STORAGE_KEY = "spotify-table:column-prefs";
  */
 export function useColumnPrefs(defaultColumnIds: string[]) {
   const [prefs, setPrefs] = useState<ColumnPreference[]>(() =>
-    loadPrefs(defaultColumnIds)
+    loadPrefs(defaultColumnIds),
   );
 
-  // If the column list changes (e.g. new columns added to the app),
   // merge new columns into the saved prefs.
   useEffect(() => {
     setPrefs((current) => mergeWithDefaults(current, defaultColumnIds));
@@ -34,20 +33,20 @@ export function useColumnPrefs(defaultColumnIds: string[]) {
     (id: string) => {
       setPrefs((current) => {
         const next = current.map((c) =>
-          c.id === id ? { ...c, visible: !c.visible } : c
+          c.id === id ? { ...c, visible: !c.visible } : c,
         );
         savePrefs(next);
         return next;
       });
     },
-    [savePrefs]
+    [savePrefs],
   );
 
   const reorderColumns = useCallback(
     (fromId: string, toId: string) => {
       setPrefs((current) => {
         const fromIndex = current.findIndex((c) => c.id === fromId);
-        const toIndex   = current.findIndex((c) => c.id === toId);
+        const toIndex = current.findIndex((c) => c.id === toId);
         if (fromIndex === -1 || toIndex === -1) return current;
 
         const next = [...current];
@@ -60,7 +59,7 @@ export function useColumnPrefs(defaultColumnIds: string[]) {
         return reordered;
       });
     },
-    [savePrefs]
+    [savePrefs],
   );
 
   const resetPrefs = useCallback(() => {
@@ -106,8 +105,8 @@ function loadPrefs(defaultIds: string[]): ColumnPreference[] {
  * - Columns newly added to the app are appended as visible.
  */
 function mergeWithDefaults(
-  saved:      ColumnPreference[],
-  defaultIds: string[]
+  saved: ColumnPreference[],
+  defaultIds: string[],
 ): ColumnPreference[] {
   const savedMap = new Map(saved.map((c) => [c.id, c]));
   const maxOrder = saved.reduce((m, c) => Math.max(m, c.order), -1);

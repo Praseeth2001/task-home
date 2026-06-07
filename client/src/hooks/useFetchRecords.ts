@@ -1,22 +1,27 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import type { SpotifyRecord, PaginationState, SortState, FilterState } from "../types";
+import type {
+  SpotifyRecord,
+  PaginationState,
+  SortState,
+  FilterState,
+} from "../types";
 import { fetchRecords } from "../api/records";
 import { useDebounce } from "./useDebounce";
 
 interface UseFetchRecordsParams {
   pagination: PaginationState;
-  sort:       SortState;
-  filters:    FilterState;
+  sort: SortState;
+  filters: FilterState;
 }
 
 export interface UseFetchRecordsReturn {
-  records:      SpotifyRecord[];
-  setRecords:   React.Dispatch<React.SetStateAction<SpotifyRecord[]>>;
-  totalCount:   number;
-  isLoading:    boolean;
-  isError:      boolean;
+  records: SpotifyRecord[];
+  setRecords: React.Dispatch<React.SetStateAction<SpotifyRecord[]>>;
+  totalCount: number;
+  isLoading: boolean;
+  isError: boolean;
   errorMessage: string;
-  refetch:      () => void;
+  refetch: () => void;
 }
 
 export function useFetchRecords({
@@ -24,14 +29,14 @@ export function useFetchRecords({
   sort,
   filters,
 }: UseFetchRecordsParams): UseFetchRecordsReturn {
-  const [records,      setRecords]      = useState<SpotifyRecord[]>([]);
-  const [totalCount,   setTotalCount]   = useState(0);
-  const [isLoading,    setIsLoading]    = useState(true);
-  const [isError,      setIsError]      = useState(false);
+  const [records, setRecords] = useState<SpotifyRecord[]>([]);
+  const [totalCount, setTotalCount] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isError, setIsError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const [tick,         setTick]         = useState(0);
+  const [tick, setTick] = useState(0);
 
-  const abortRef        = useRef<AbortController | null>(null);
+  const abortRef = useRef<AbortController | null>(null);
   const debouncedSearch = useDebounce(filters.search, 300);
 
   const effectiveFilters: FilterState = { ...filters, search: debouncedSearch };
@@ -59,7 +64,7 @@ export function useFetchRecords({
       });
 
     return () => controller.abort();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     pagination.page,
     pagination.limit,
@@ -74,5 +79,13 @@ export function useFetchRecords({
 
   const refetch = useCallback(() => setTick((t) => t + 1), []);
 
-  return { records, setRecords, totalCount, isLoading, isError, errorMessage, refetch };
+  return {
+    records,
+    setRecords,
+    totalCount,
+    isLoading,
+    isError,
+    errorMessage,
+    refetch,
+  };
 }

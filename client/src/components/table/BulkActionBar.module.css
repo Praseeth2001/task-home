@@ -12,8 +12,15 @@
 }
 
 @keyframes slideDown {
-  from { opacity: 0; transform: translateY(-6px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .left {
@@ -53,7 +60,10 @@
   text-underline-offset: 2px;
   transition: opacity 0.15s;
 }
-.selectAllBtn:hover { opacity: 0.75; }
+
+.selectAllBtn:hover {
+  opacity: 0.75;
+}
 
 .right {
   display: flex;
@@ -77,8 +87,15 @@
   cursor: pointer;
   transition: opacity 0.15s;
 }
-.actionBtn:hover:not(:disabled) { opacity: 0.85; }
-.actionBtn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.actionBtn:hover:not(:disabled) {
+  opacity: 0.85;
+}
+
+.actionBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
 
 .clearBtn {
   height: 28px;
@@ -91,6 +108,7 @@
   cursor: pointer;
   transition: color 0.15s, border-color 0.15s;
 }
+
 .clearBtn:hover {
   color: var(--color-error);
   border-color: var(--color-error);
@@ -101,9 +119,14 @@
   display: inline-block;
   width: 12px;
   height: 12px;
-  border: 2px solid rgba(0,0,0,0.2);
+  border: 2px solid rgba(0, 0, 0, 0.2);
   border-top-color: var(--color-bg);
   border-radius: 50%;
   animation: spin 0.6s linear infinite;
 }
-@keyframes spin { to { transform: rotate(360deg); } }
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

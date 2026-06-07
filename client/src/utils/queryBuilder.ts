@@ -13,18 +13,18 @@ import type { PaginationState, SortState, FilterState } from "../types";
  */
 export function buildQueryParams(
   pagination: PaginationState,
-  sort:       SortState,
-  filters:    FilterState
+  sort: SortState,
+  filters: FilterState,
 ): URLSearchParams {
   const p = new URLSearchParams();
 
   // Pagination
-  p.set("_page",  String(pagination.page));
+  p.set("_page", String(pagination.page));
   p.set("_limit", String(pagination.limit));
 
   // Sorting
   if (sort.column) {
-    p.set("_sort",  sort.column);
+    p.set("_sort", sort.column);
     p.set("_order", sort.order);
   }
 

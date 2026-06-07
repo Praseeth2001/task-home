@@ -21,12 +21,12 @@ async function handleResponse<T>(res: Response): Promise<T> {
 /** Fetch paginated + filtered + sorted list */
 export async function fetchRecords(
   pagination: PaginationState,
-  sort:       SortState,
-  filters:    FilterState,
-  signal?:    AbortSignal
+  sort: SortState,
+  filters: FilterState,
+  signal?: AbortSignal,
 ): Promise<PaginatedResponse<SpotifyRecord>> {
   const params = buildQueryParams(pagination, sort, filters);
-  const res    = await fetch(`${RESOURCE}?${params.toString()}`, { signal });
+  const res = await fetch(`${RESOURCE}?${params.toString()}`, { signal });
 
   if (!res.ok) {
     const text = await res.text().catch(() => res.statusText);
@@ -34,7 +34,7 @@ export async function fetchRecords(
   }
 
   const totalCount = Number(res.headers.get("X-Total-Count") ?? 0);
-  const data       = await res.json() as SpotifyRecord[];
+  const data = (await res.json()) as SpotifyRecord[];
   return { data, totalCount };
 }
 
@@ -46,13 +46,13 @@ export async function fetchRecord(id: string): Promise<SpotifyRecord> {
 
 /** Inline edit — PATCH partial update with optimistic UI support */
 export async function patchRecord(
-  id:      string,
-  payload: Partial<SpotifyRecord>
+  id: string,
+  payload: Partial<SpotifyRecord>,
 ): Promise<SpotifyRecord> {
   const res = await fetch(`${RESOURCE}/${id}`, {
-    method:  "PATCH",
+    method: "PATCH",
     headers: { "Content-Type": "application/json" },
-    body:    JSON.stringify(payload),
+    body: JSON.stringify(payload),
   });
   return handleResponse<SpotifyRecord>(res);
 }
@@ -63,19 +63,20 @@ export async function patchRecord(
  * Never called during normal table interaction.
  */
 export async function fetchAllMatchingRecords(
-  sort:    SortState,
+  sort: SortState,
   filters: FilterState,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ): Promise<SpotifyRecord[]> {
   const countParams = buildQueryParams({ page: 1, limit: 1 }, sort, filters);
-  const countRes    = await fetch(`${RESOURCE}?${countParams}`, { signal });
-  if (!countRes.ok) throw new Error(`Export preflight failed: ${countRes.status}`);
+  const countRes = await fetch(`${RESOURCE}?${countParams}`, { signal });
+  if (!countRes.ok)
+    throw new Error(`Export preflight failed: ${countRes.status}`);
 
   const total = Number(countRes.headers.get("X-Total-Count") ?? 0);
   if (total === 0) return [];
 
   const allParams = buildQueryParams({ page: 1, limit: total }, sort, filters);
-  const allRes    = await fetch(`${RESOURCE}?${allParams}`, { signal });
+  const allRes = await fetch(`${RESOURCE}?${allParams}`, { signal });
   if (!allRes.ok) throw new Error(`Export fetch failed: ${allRes.status}`);
   return allRes.json() as Promise<SpotifyRecord[]>;
 }

@@ -2,9 +2,9 @@ import styles from "./TextFilter.module.css";
 import type { SpotifyRecord } from "../../types";
 
 interface TextFilterProps {
-  field:    keyof SpotifyRecord;
-  label:    string;
-  value:    string;
+  field: keyof SpotifyRecord;
+  label: string;
+  value: string;
   onChange: (field: keyof SpotifyRecord, value: string) => void;
   placeholder?: string;
 }
@@ -12,7 +12,13 @@ interface TextFilterProps {
 /**
  * "Contains" text filter — maps to json-server's `<field>_like` param.
  */
-export function TextFilter({ field, label, value, onChange, placeholder }: TextFilterProps) {
+export function TextFilter({
+  field,
+  label,
+  value,
+  onChange,
+  placeholder,
+}: TextFilterProps) {
   const isActive = value.trim().length > 0;
 
   return (

@@ -2,7 +2,7 @@ import { useRef } from "react";
 import styles from "./SearchBar.module.css";
 
 interface SearchBarProps {
-  value:    string;
+  value: string;
   onChange: (value: string) => void;
 }
 
@@ -17,7 +17,9 @@ export function SearchBar({ value, onChange }: SearchBarProps) {
 
   return (
     <div className={`${styles.root} ${isActive ? styles.active : ""}`}>
-      <span className={styles.icon} aria-hidden>⌕</span>
+      <span className={styles.icon} aria-hidden>
+        ⌕
+      </span>
       <input
         ref={inputRef}
         className={styles.input}
@@ -31,10 +33,17 @@ export function SearchBar({ value, onChange }: SearchBarProps) {
       />
       {isActive && (
         <>
-          <span className={styles.activeIndicator} aria-live="polite" aria-label="Search active" />
+          <span
+            className={styles.activeIndicator}
+            aria-live="polite"
+            aria-label="Search active"
+          />
           <button
             className={styles.clearBtn}
-            onClick={() => { onChange(""); inputRef.current?.focus(); }}
+            onClick={() => {
+              onChange("");
+              inputRef.current?.focus();
+            }}
             aria-label="Clear search"
             type="button"
           >

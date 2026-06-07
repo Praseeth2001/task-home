@@ -3,22 +3,26 @@ import type { SpotifyRecord } from "../../types";
 import styles from "./EditableCell.module.css";
 
 // Fields the user is allowed to edit + their validation rules
-export const EDITABLE_FIELDS: Partial<Record<keyof SpotifyRecord, EditableFieldConfig>> = {
+export const EDITABLE_FIELDS: Partial<
+  Record<keyof SpotifyRecord, EditableFieldConfig>
+> = {
   track_name: {
-    type:        "text",
-    validate:    (v) => (String(v).trim().length > 0 ? null : "Track name cannot be empty"),
+    type: "text",
+    validate: (v) =>
+      String(v).trim().length > 0 ? null : "Track name cannot be empty",
     placeholder: "Track name",
   },
   track_artist: {
-    type:        "text",
-    validate:    (v) => (String(v).trim().length > 0 ? null : "Artist cannot be empty"),
+    type: "text",
+    validate: (v) =>
+      String(v).trim().length > 0 ? null : "Artist cannot be empty",
     placeholder: "Artist name",
   },
   track_popularity: {
-    type:        "number",
-    min:         0,
-    max:         100,
-    validate:    (v) => {
+    type: "number",
+    min: 0,
+    max: 100,
+    validate: (v) => {
       const n = Number(v);
       if (isNaN(n)) return "Must be a number";
       if (n < 0 || n > 100) return "Must be 0–100";
@@ -29,21 +33,29 @@ export const EDITABLE_FIELDS: Partial<Record<keyof SpotifyRecord, EditableFieldC
 };
 
 export interface EditableFieldConfig {
-  type:        "text" | "number";
-  validate:    (value: string | number) => string | null;
+  type: "text" | "number";
+  validate: (value: string | number) => string | null;
   placeholder?: string;
-  min?:        number;
-  max?:        number;
+  min?: number;
+  max?: number;
 }
 
 interface EditableCellProps {
-  rowId:         string;
-  field:         keyof SpotifyRecord;
-  value:         SpotifyRecord[keyof SpotifyRecord];
-  isEditing:     boolean;
-  onStartEdit:   (rowId: string, field: keyof SpotifyRecord, originalValue: SpotifyRecord[keyof SpotifyRecord]) => void;
-  onSave:        (rowId: string, field: keyof SpotifyRecord, newValue: string | number) => Promise<void>;
-  onCancel:      () => void;
+  rowId: string;
+  field: keyof SpotifyRecord;
+  value: SpotifyRecord[keyof SpotifyRecord];
+  isEditing: boolean;
+  onStartEdit: (
+    rowId: string,
+    field: keyof SpotifyRecord,
+    originalValue: SpotifyRecord[keyof SpotifyRecord],
+  ) => void;
+  onSave: (
+    rowId: string,
+    field: keyof SpotifyRecord,
+    newValue: string | number,
+  ) => Promise<void>;
+  onCancel: () => void;
 }
 
 export function EditableCell({
@@ -55,18 +67,17 @@ export function EditableCell({
   onSave,
   onCancel,
 }: EditableCellProps) {
-  const config     = EDITABLE_FIELDS[field];
-  const inputRef   = useRef<HTMLInputElement>(null);
-  const [draft, setDraft]       = useState(String(value ?? ""));
-  const [error, setError]       = useState<string | null>(null);
-  const [saving, setSaving]     = useState(false);
+  const config = EDITABLE_FIELDS[field];
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [draft, setDraft] = useState(String(value ?? ""));
+  const [error, setError] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
 
   // Focus input when editing starts; reset draft to current value
   useEffect(() => {
     if (isEditing) {
       setDraft(String(value ?? ""));
       setError(null);
-      // Tiny delay so the DOM has painted the input
       setTimeout(() => {
         inputRef.current?.focus();
         inputRef.current?.select();
@@ -76,8 +87,8 @@ export function EditableCell({
 
   const handleSave = useCallback(async () => {
     if (!config) return;
-    const trimmed    = draft.trim();
-    const parsedVal  = config.type === "number" ? Number(trimmed) : trimmed;
+    const trimmed = draft.trim();
+    const parsedVal = config.type === "number" ? Number(trimmed) : trimmed;
     const validation = config.validate(parsedVal);
 
     if (validation) {
@@ -88,7 +99,6 @@ export function EditableCell({
     setSaving(true);
     try {
       await onSave(rowId, field, parsedVal);
-      // onSave resolves → parent commits edit state
     } catch {
       setError("Save failed — changes rolled back");
     } finally {
@@ -96,15 +106,23 @@ export function EditableCell({
     }
   }, [config, draft, field, onSave, rowId]);
 
-  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
-    if (e.key === "Enter")  { e.preventDefault(); handleSave(); }
-    if (e.key === "Escape") { e.preventDefault(); onCancel(); }
-  }, [handleSave, onCancel]);
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        handleSave();
+      }
+      if (e.key === "Escape") {
+        e.preventDefault();
+        onCancel();
+      }
+    },
+    [handleSave, onCancel],
+  );
 
   // ── View mode ─────────────────────────────────────────────────────────────
   if (!isEditing) {
     if (!config) {
-      // Not editable — render plain text
       return <span className={styles.plain}>{String(value ?? "")}</span>;
     }
 
@@ -116,7 +134,9 @@ export function EditableCell({
         aria-label={`Edit ${field.replace(/_/g, " ")}: ${value}`}
       >
         <span className={styles.triggerText}>{String(value ?? "")}</span>
-        <span className={styles.pencil} aria-hidden>✎</span>
+        <span className={styles.pencil} aria-hidden>
+          ✎
+        </span>
       </button>
     );
   }
@@ -131,7 +151,10 @@ export function EditableCell({
         min={config?.min}
         max={config?.max}
         value={draft}
-        onChange={(e) => { setDraft(e.target.value); setError(null); }}
+        onChange={(e) => {
+          setDraft(e.target.value);
+          setError(null);
+        }}
         onKeyDown={handleKeyDown}
         placeholder={config?.placeholder}
         disabled={saving}
@@ -140,7 +163,11 @@ export function EditableCell({
       />
 
       {error && (
-        <span id={`edit-error-${rowId}`} className={styles.errorMsg} role="alert">
+        <span
+          id={`edit-error-${rowId}`}
+          className={styles.errorMsg}
+          role="alert"
+        >
           {error}
         </span>
       )}

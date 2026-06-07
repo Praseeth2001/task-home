@@ -4,12 +4,13 @@
   gap: 10px;
   padding: 0.75rem 0;
   overflow-x: auto;
-  /* keep items from wrapping — scroll instead */
   flex-wrap: nowrap;
-  /* hide scrollbar but keep functionality */
   scrollbar-width: none;
 }
-.toolbar::-webkit-scrollbar { display: none; }
+
+.toolbar::-webkit-scrollbar {
+  display: none;
+}
 
 .divider {
   width: 1px;
@@ -45,6 +46,7 @@
   transition: border-color 0.15s, color 0.15s;
   flex-shrink: 0;
 }
+
 .clearAll:hover {
   border-color: var(--color-error);
   color: var(--color-error);

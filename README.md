@@ -6,7 +6,7 @@ A high-performance, fully interactive table for 30,000 Spotify tracks — built 
 
 ```bash
 # 1. Install all dependencies
-npm install && cd client && npm install && cd ..
+npm run install:all
 
 # 2. Download the dataset
 #    https://www.kaggle.com/datasets/joebeachcapital/30000-spotify-songs
@@ -68,9 +68,6 @@ Chosen over the Sales dataset because:
 ### `useReducer` for table state
 Sorting, filtering, and pagination interact — changing a filter must reset the page to 1 and clear the selection. With individual `useState` calls this requires `useEffect` chains that are hard to test and easy to break. A single reducer makes every interaction explicit and unit-testable as a pure function.
 
-### TanStack Table not used — deliberate choice
-The brief says any table approach is fine and notes TanStack Table "shows your fundamentals". We went headless without TanStack Table to show we understand virtualisation, column management, and selection state from first principles. `@tanstack/react-virtual` handles the virtualisation; everything else is written directly.
-
 ### json-server v0.17 pinned
 v1.0 changed query-param syntax in a breaking way. v0.17 is pinned in the root `package.json` scripts to match the brief's example params exactly (`_page`, `_limit`, `_like`, `_gte`, `_lte`, `q`).
 
@@ -100,21 +97,4 @@ The export doesn't use the currently loaded page — it re-fetches all rows matc
 - **Deployed demo** — would add with a bit more time; Vercel + the json-server running on Railway would work cleanly.
 - **More test coverage** — current tests cover the reducer, CSV escaping, and query builder. Component tests for `EditableCell` (optimistic rollback) and `MultiSelectFilter` (close on escape) would be valuable additions.
 - **Accessibility pass** — `aria-live` regions are in place; a fuller pass with a screen reader would catch edge cases in the virtual scroll.
-
 ---
-
-## Time spent
-
-| Phase | Hours |
-|---|---|
-| Planning, folder structure, types | ~1.5 h |
-| API layer + query builder | ~1 h |
-| State architecture (`useTableState` reducer) | ~2 h |
-| Base table + virtualisation | ~2.5 h |
-| Filters + search | ~2 h |
-| Inline editing + optimistic UI | ~2 h |
-| Bulk actions + export | ~1.5 h |
-| Column management | ~1 h |
-| Tests | ~1 h |
-| README + polish | ~1 h |
-| **Total** | **~15.5 h** |

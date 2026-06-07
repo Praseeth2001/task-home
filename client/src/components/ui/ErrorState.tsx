@@ -11,7 +11,9 @@ export function ErrorState({
 }: ErrorStateProps) {
   return (
     <div className={styles.root} role="alert">
-      <div className={styles.icon} aria-hidden>⚠</div>
+      <div className={styles.icon} aria-hidden>
+        ⚠
+      </div>
       <p className={styles.title}>Failed to load</p>
       <p className={styles.message}>{message}</p>
       {onRetry && (

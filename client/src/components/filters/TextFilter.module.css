@@ -30,10 +30,18 @@
   outline: none;
   transition: border-color 0.15s;
 }
-.input::placeholder { color: var(--color-text-subtle); }
-.input:focus        { border-color: var(--color-accent); }
 
-.active .input      { border-color: color-mix(in srgb, var(--color-accent) 50%, var(--color-border)); }
+.input::placeholder {
+  color: var(--color-text-subtle);
+}
+
+.input:focus {
+  border-color: var(--color-accent);
+}
+
+.active .input {
+  border-color: color-mix(in srgb, var(--color-accent) 50%, var(--color-border));
+}
 
 .clear {
   position: absolute;
@@ -51,4 +59,8 @@
   justify-content: center;
   transition: background 0.15s;
 }
-.clear:hover { background: var(--color-error); color: #fff; }
+
+.clear:hover {
+  background: var(--color-error);
+  color: #fff;
+}

@@ -4,13 +4,13 @@ import type { TableStateActions as Actions } from "../../hooks";
 import styles from "./BulkActionBar.module.css";
 
 interface BulkActionBarProps {
-  selection:    BulkSelectionState;
-  totalCount:   number;       // total matching rows (for "select all N" label)
-  pageCount:    number;       // rows on this page
-  actions:      Actions;
-  onExport:     () => void;   // export selected
-  onSelectAll:  () => void;   // select ALL matching (not just page)
-  isExporting:  boolean;
+  selection: BulkSelectionState;
+  totalCount: number;
+  pageCount: number;
+  actions: Actions;
+  onExport: () => void;
+  onSelectAll: () => void;
+  isExporting: boolean;
 }
 
 /**
@@ -32,7 +32,7 @@ export const BulkActionBar = memo(function BulkActionBar({
 }: BulkActionBarProps) {
   const { selectedIds, scope } = selection;
   const selectedCount = scope === "all" ? totalCount : selectedIds.size;
-  const isAllScope    = scope === "all";
+  const isAllScope = scope === "all";
 
   if (selectedCount === 0) return null;
 
@@ -40,8 +40,9 @@ export const BulkActionBar = memo(function BulkActionBar({
     <div className={styles.bar} role="status" aria-live="polite">
       <div className={styles.left}>
         <span className={styles.count}>
-          <span className={styles.countNum}>{selectedCount.toLocaleString()}</span>
-          {" "}
+          <span className={styles.countNum}>
+            {selectedCount.toLocaleString()}
+          </span>{" "}
           {selectedCount === 1 ? "row" : "rows"} selected
           {isAllScope && (
             <span className={styles.scopeTag}> · all matching</span>
@@ -70,7 +71,9 @@ export const BulkActionBar = memo(function BulkActionBar({
           aria-label="Export selected rows to CSV"
         >
           {isExporting ? (
-            <><span className={styles.spinner} aria-hidden /> Exporting…</>
+            <>
+              <span className={styles.spinner} aria-hidden /> Exporting…
+            </>
           ) : (
             <>↓ Export CSV</>
           )}

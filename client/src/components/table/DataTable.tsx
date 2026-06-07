@@ -15,7 +15,7 @@ export interface ColumnDef {
   id: string;
   field: keyof SpotifyRecord;
   label: string;
-  width: number; // required — every column needs a fixed width for div layout
+  width: number;
   sortable?: boolean;
   render?: (
     value: SpotifyRecord[keyof SpotifyRecord],
@@ -144,25 +144,6 @@ function formatDuration(ms: number): string {
   const mins = Math.floor(s / 60);
   const secs = s % 60;
   return `${mins}:${secs.toString().padStart(2, "0")}`;
-}
-
-// ─── Cell ─────────────────────────────────────────────────────────────────────
-
-interface CellProps {
-  width: number;
-  children: React.ReactNode;
-  className?: string;
-}
-
-function Cell({ width, children, className }: CellProps) {
-  return (
-    <div
-      className={`${styles.cell} ${className ?? ""}`}
-      style={{ width, minWidth: width, maxWidth: width }}
-    >
-      {children}
-    </div>
-  );
 }
 
 // ─── Header row ───────────────────────────────────────────────────────────────
@@ -420,8 +401,6 @@ export function DataTable({
 
   return (
     <div className={styles.wrapper}>
-      {/* Sticky header — outside the scroll container so it never scrolls vertically,
-          but shares horizontal scroll position via synced scrollLeft */}
       <div
         className={styles.headerScroll}
         ref={(el) => {

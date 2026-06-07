@@ -28,7 +28,10 @@
   padding: 0;
   transition: color 0.15s;
 }
-.clearBtn:hover { color: var(--color-error); }
+
+.clearBtn:hover {
+  color: var(--color-error);
+}
 
 .inputs {
   display: flex;
@@ -51,10 +54,19 @@
   /* hide number spinners — they waste space */
   -moz-appearance: textfield;
 }
+
 .input::-webkit-outer-spin-button,
-.input::-webkit-inner-spin-button { -webkit-appearance: none; }
-.input:focus          { border-color: var(--color-accent); }
-.active .input        { border-color: color-mix(in srgb, var(--color-accent) 40%, var(--color-border)); }
+.input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}
+
+.input:focus {
+  border-color: var(--color-accent);
+}
+
+.active .input {
+  border-color: color-mix(in srgb, var(--color-accent) 40%, var(--color-border));
+}
 
 .sep {
   color: var(--color-text-subtle);

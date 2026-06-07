@@ -53,7 +53,8 @@
 /* ── Main / table area ────────────────────────────────────────────────────── */
 .main {
   flex: 1;
-  min-height: 0;           /* allows the table to scroll within remaining space */
+  min-height: 0;
+  /* allows the table to scroll within remaining space */
   display: flex;
   flex-direction: column;
   padding: 1rem 1.5rem;
@@ -101,10 +102,12 @@
   transition: background 0.15s, border-color 0.15s;
   line-height: 1;
 }
+
 .pageBtn:hover:not(:disabled) {
   background: var(--color-surface-hover);
   border-color: var(--color-accent);
 }
+
 .pageBtn:disabled {
   opacity: 0.3;
   cursor: not-allowed;
@@ -129,7 +132,10 @@
   cursor: pointer;
   transition: border-color 0.15s;
 }
-.limitSelect:hover { border-color: var(--color-accent); }
+
+.limitSelect:hover {
+  border-color: var(--color-accent);
+}
 
 .pageBtnActive {
   background: var(--color-accent-subtle);

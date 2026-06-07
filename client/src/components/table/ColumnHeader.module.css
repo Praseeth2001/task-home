@@ -12,15 +12,29 @@
 .sortable {
   cursor: pointer;
 }
-.sortable:hover .label  { color: var(--color-accent); }
-.sortable:hover .arrow  { opacity: 1; }
+
+.sortable:hover .label {
+  color: var(--color-accent);
+}
+
+.sortable:hover .arrow {
+  opacity: 1;
+}
+
 .sortable:focus-visible {
   outline: 2px solid var(--color-accent);
   outline-offset: -2px;
 }
 
-.active .label { color: var(--color-accent); font-weight: 600; }
-.active .arrow { opacity: 1; color: var(--color-accent); }
+.active .label {
+  color: var(--color-accent);
+  font-weight: 600;
+}
+
+.active .arrow {
+  opacity: 1;
+  color: var(--color-accent);
+}
 
 .inner {
   display: flex;

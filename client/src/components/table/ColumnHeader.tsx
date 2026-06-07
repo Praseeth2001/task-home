@@ -3,11 +3,11 @@ import type { SpotifyRecord, SortState } from "../../types";
 import styles from "./ColumnHeader.module.css";
 
 interface ColumnHeaderProps {
-  label:    string;
-  field:    keyof SpotifyRecord;
-  sort:     SortState;
-  onSort:   (field: keyof SpotifyRecord) => void;
-  width?:   number;
+  label: string;
+  field: keyof SpotifyRecord;
+  sort: SortState;
+  onSort: (field: keyof SpotifyRecord) => void;
+  width?: number;
   sortable?: boolean;
 }
 
@@ -20,7 +20,7 @@ export const ColumnHeader = memo(function ColumnHeader({
   sortable = true,
 }: ColumnHeaderProps) {
   const isActive = sort.column === field;
-  const arrow    = isActive ? (sort.order === "asc" ? "↑" : "↓") : null;
+  const arrow = isActive ? (sort.order === "asc" ? "↑" : "↓") : null;
 
   function handleClick() {
     if (sortable) onSort(field);
@@ -46,8 +46,8 @@ export const ColumnHeader = memo(function ColumnHeader({
             ? "ascending"
             : "descending"
           : sortable
-          ? "none"
-          : undefined
+            ? "none"
+            : undefined
       }
       role={sortable ? "columnheader button" : "columnheader"}
     >

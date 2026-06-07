@@ -5,17 +5,17 @@ export type PageSize = (typeof PAGE_SIZE_OPTIONS)[number];
 
 interface UsePaginationParams {
   totalCount: number;
-  page:       number;
-  limit:      number;
+  page: number;
+  limit: number;
 }
 
 export interface UsePaginationReturn {
-  totalPages:    number;
-  startRow:      number;   // 1-based, for "Showing X–Y of Z"
-  endRow:        number;
-  hasPrev:       boolean;
-  hasNext:       boolean;
-  pageNumbers:   (number | "…")[];  // for page-number nav with ellipsis
+  totalPages: number;
+  startRow: number;
+  endRow: number;
+  hasPrev: boolean;
+  hasNext: boolean;
+  pageNumbers: (number | "…")[];
 }
 
 /**
@@ -30,8 +30,8 @@ export function usePagination({
 }: UsePaginationParams): UsePaginationReturn {
   return useMemo(() => {
     const totalPages = Math.max(1, Math.ceil(totalCount / limit));
-    const startRow   = totalCount === 0 ? 0 : (page - 1) * limit + 1;
-    const endRow     = Math.min(page * limit, totalCount);
+    const startRow = totalCount === 0 ? 0 : (page - 1) * limit + 1;
+    const endRow = Math.min(page * limit, totalCount);
 
     return {
       totalPages,
@@ -56,9 +56,9 @@ function buildPageNumbers(current: number, total: number): (number | "…")[] {
   }
 
   const pages: (number | "…")[] = [];
-  const WING = 1; // pages on each side of current
+  const WING = 1;
 
-  const showLeft  = current - WING;
+  const showLeft = current - WING;
   const showRight = current + WING;
 
   // Always show first page
@@ -66,7 +66,11 @@ function buildPageNumbers(current: number, total: number): (number | "…")[] {
 
   if (showLeft > 2) pages.push("…");
 
-  for (let p = Math.max(2, showLeft); p <= Math.min(total - 1, showRight); p++) {
+  for (
+    let p = Math.max(2, showLeft);
+    p <= Math.min(total - 1, showRight);
+    p++
+  ) {
     pages.push(p);
   }
 
